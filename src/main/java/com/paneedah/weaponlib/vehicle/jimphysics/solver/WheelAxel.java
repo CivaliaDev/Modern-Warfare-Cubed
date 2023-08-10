@@ -1,8 +1,10 @@
 package com.paneedah.weaponlib.vehicle.jimphysics.solver;
 
+import com.paneedah.weaponlib.network.IEncodable;
+import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.Vec3d;
 
-public class WheelAxel {
+public class WheelAxel implements IEncodable<WheelAxel> {
 	
 	public VehiclePhysicsSolver solver;
 	
@@ -158,4 +160,17 @@ public class WheelAxel {
 		this.addWheels(left, right);
 		return this;
 	}
+
+	@Override
+	public WheelAxel readFromBuf(ByteBuf buf) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void writeToBuf(ByteBuf buf) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

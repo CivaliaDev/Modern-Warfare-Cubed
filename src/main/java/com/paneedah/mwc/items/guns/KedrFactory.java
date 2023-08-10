@@ -43,7 +43,7 @@ public class KedrFactory {
         .withFlashOffsetX(() -> 0.12f)
         .withFlashOffsetY(() -> 0.18f)
         .withInaccuracy(2f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .withInformationProvider(stack -> Arrays.asList(
         "Type: Submachine Gun",
         "Damage: 5", 

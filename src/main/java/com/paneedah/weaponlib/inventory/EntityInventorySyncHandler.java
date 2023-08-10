@@ -1,8 +1,7 @@
 package com.paneedah.weaponlib.inventory;
 
-import com.paneedah.mwc.equipment.inventory.EquipmentInventory;
 import com.paneedah.weaponlib.ModContext;
-import com.paneedah.mwc.capabilities.EquipmentCapability;
+import com.paneedah.weaponlib.compatibility.CompatibleCustomPlayerInventoryCapability;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -13,7 +12,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class EntityInventorySyncHandler implements IMessageHandler<EntityInventorySyncMessage, IMessage> {
 
@@ -39,10 +38,10 @@ public class EntityInventorySyncHandler implements IMessageHandler<EntityInvento
     public void onServerMessage(EntityInventorySyncMessage message, MessageContext messageContext) {
         messageContext.getServerHandler().player.getServer().addScheduledTask(() -> {
             EntityPlayer player = messageContext.getServerHandler().player;
-            EquipmentInventory inventory = message.getInventory();
+            CustomPlayerInventory inventory = message.getInventory();
             inventory.setContext(modContext);
             inventory.setOwner((EntityPlayer) player);
-            EquipmentCapability.setInventory((EntityLivingBase) player, inventory);
+            CompatibleCustomPlayerInventoryCapability.setInventory((EntityLivingBase) player, inventory);
             NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 1000);
             modContext.getChannel().sendToAllAround(new EntityInventorySyncMessage(player, inventory, true), point);
         });
@@ -50,15 +49,15 @@ public class EntityInventorySyncHandler implements IMessageHandler<EntityInvento
 
     @SideOnly(Side.CLIENT)
     public void onClientMessage(EntityInventorySyncMessage message, MessageContext messageContext) {
-        MC.addScheduledTask(() -> {
-            EntityPlayer player = MC.player;
+        mc.addScheduledTask(() -> {
+            EntityPlayer player = mc.player;
             Entity targetEntity = message.getEntity(player.world);
 
             if(targetEntity != player || (targetEntity == player && !message.isExcludeEntity())) {
-                EquipmentInventory inventory = message.getInventory();
+                CustomPlayerInventory inventory = message.getInventory();
                 inventory.setContext(modContext);
                 inventory.setOwner((EntityPlayer) targetEntity);
-                EquipmentCapability.setInventory((EntityLivingBase) targetEntity, inventory);
+                CompatibleCustomPlayerInventoryCapability.setInventory((EntityLivingBase) targetEntity, inventory);
             }
         });
     }

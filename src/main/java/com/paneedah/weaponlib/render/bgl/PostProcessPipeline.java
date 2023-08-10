@@ -32,8 +32,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
-import static com.paneedah.mwc.utils.ModReference.ID;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 /**
  * Post-processing pipeline enabling modern post effects to be applied in
@@ -47,10 +46,10 @@ public class PostProcessPipeline {
 	private static int height = -1;
 
 	// Textures
-	public static final ResourceLocation HEAT_DISTORTION = new ResourceLocation(ID + "textures/maps/heatdistortion.png");
-	public static final ResourceLocation CLOUD_SPRITE = new ResourceLocation(ID + "textures/maps/cloudsprite.png");
-	public static final ResourceLocation RAIN_DROP_TEXTURE = new ResourceLocation(ID + "textures/maps/raindrop.png");
-	public static final ResourceLocation SNOW_FLAKE_TEXTURE = new ResourceLocation(ID + "textures/maps/snowflake.png");
+	public static final ResourceLocation HEAT_DISTORTION = new ResourceLocation(ModReference.ID + "textures/maps/heatdistortion.png");
+	public static final ResourceLocation CLOUD_SPRITE = new ResourceLocation(ModReference.ID + "textures/maps/cloudsprite.png");
+	public static final ResourceLocation RAIN_DROP_TEXTURE = new ResourceLocation(ModReference.ID + "textures/maps/raindrop.png");
+	public static final ResourceLocation SNOW_FLAKE_TEXTURE = new ResourceLocation(ModReference.ID + "textures/maps/snowflake.png");
 
 	// Float buffers
 	private static final FloatBuffer projectionBuffer = BufferUtils.createFloatBuffer(16);
@@ -100,7 +99,7 @@ public class PostProcessPipeline {
 	private static final float[] BASE_FOG_COLOR = new float[] { 0.6f, 0.6f, 0.6f };
 
 	/**
-	 * This is a useful tool to easily renderer things to the distortion buffer
+	 * This is a useful tool to easily render things to the distortion buffer
 	 * without making GL calls in areas where it is inconvienent to.
 	 * 
 	 * @author Homer Riva-Cambrin, 2022
@@ -196,12 +195,12 @@ public class PostProcessPipeline {
 
 			if(persistenceWeatherStatus) {
 				if(!swappedWeatherRenderer)
-					originalWeatherRenderer = MC.world.provider.getWeatherRenderer();
+					originalWeatherRenderer = mc.world.provider.getWeatherRenderer();
 
-				MC.world.provider.setWeatherRenderer(modernWeatherRenderer);
+				mc.world.provider.setWeatherRenderer(modernWeatherRenderer);
 
 			} else {
-				MC.world.provider.setWeatherRenderer(originalWeatherRenderer);
+				mc.world.provider.setWeatherRenderer(originalWeatherRenderer);
 			}
 			
 			swappedWeatherRenderer = true;
@@ -257,7 +256,7 @@ public class PostProcessPipeline {
 		normalDepthTexture.recreateBuffer(width, height);
 
 		/*
-		Framebuffer buffer = MC.getFramebuffer();
+		Framebuffer buffer = mc.getFramebuffer();
 		
 		if(normalDepthTexture == null) {
 			normalDepthTexture = new DepthTexture(buffer.framebufferWidth, buffer.framebufferHeight);
@@ -364,7 +363,7 @@ public class PostProcessPipeline {
 
 	public static void blitDepth() {
 		
-		Framebuffer buffer = MC.getFramebuffer();
+		Framebuffer buffer = mc.getFramebuffer();
 		
 		if(normalDepthTexture == null)
 			normalDepthTexture = new DepthTexture(buffer.framebufferWidth, buffer.framebufferHeight);
@@ -380,13 +379,13 @@ public class PostProcessPipeline {
 		// System.out.println("Core");
 
 		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_READ_FRAMEBUFFER,
-				MC.getFramebuffer().framebufferObject);
+				mc.getFramebuffer().framebufferObject);
 		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_DRAW_FRAMEBUFFER, depthBuffer);
 
 		GLCompatible.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL11.GL_DEPTH_BUFFER_BIT,
 				GL11.GL_NEAREST);
 
-		MC.getFramebuffer().bindFramebuffer(false);
+		mc.getFramebuffer().bindFramebuffer(false);
 		*/
 	}
 
@@ -400,15 +399,15 @@ public class PostProcessPipeline {
 		if (width == -1 || height == -1)
 			return true;
 
-		return MC.displayWidth != width || MC.displayHeight != height;
+		return mc.displayWidth != width || mc.displayHeight != height;
 	}
 
 	/**
 	 * Recreates the various framebuffers that were initialized
 	 */
 	public static void recreateFramebuffers() {
-		width = MC.displayWidth;
-		height = MC.displayHeight;
+		width = mc.displayWidth;
+		height = mc.displayHeight;
 
 		recreateDepthFramebuffer();
 		
@@ -461,7 +460,7 @@ public class PostProcessPipeline {
 
 		/*
 		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_READ_FRAMEBUFFER,
-				MC.getFramebuffer().framebufferObject);
+				mc.getFramebuffer().framebufferObject);
 		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_DRAW_FRAMEBUFFER,
 				PostProcessPipeline.distortionBuffer.framebufferObject);
 
@@ -477,7 +476,7 @@ public class PostProcessPipeline {
 		for (DistortionPoint dp : distortionList)
 			dp.update();
 
-		Vec3d playerPos = MC.player.getPositionVector();
+		Vec3d playerPos = mc.player.getPositionVector();
 
 		distortionList.sort((a, b) -> {
 			double distA = new Vec3d(a.getX(), a.getY(), a.getZ()).subtract(playerPos).length();
@@ -496,7 +495,7 @@ public class PostProcessPipeline {
 		GlStateManager.enableBlend();
 		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.0F);
 		GlStateManager.blendFunc(SourceFactor.ONE, DestFactor.ONE_MINUS_SRC_ALPHA);
-		MC.getTextureManager().bindTexture(CLOUD_SPRITE);
+		mc.getTextureManager().bindTexture(CLOUD_SPRITE);
 
 		GlStateManager.enableDepth();
 
@@ -553,7 +552,7 @@ public class PostProcessPipeline {
 		GlStateManager.depthMask(true);
 
 		GlStateManager.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-		MC.getFramebuffer().bindFramebuffer(false);
+		mc.getFramebuffer().bindFramebuffer(false);
 		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1F);
 		GlStateManager.popMatrix();
 
@@ -571,9 +570,9 @@ public class PostProcessPipeline {
 	}
 
 	public static float getFogIntensity() {
-		if (MC.world == null)
+		if (mc.world == null)
 			return 0.0f;
-		return BASE_FOG_INTENSITY * MC.world.getRainStrength(MC.getRenderPartialTicks());
+		return BASE_FOG_INTENSITY * mc.world.getRainStrength(mc.getRenderPartialTicks());
 	}
 	
 	public static float[] getBaseFogColor() {
@@ -581,7 +580,7 @@ public class PostProcessPipeline {
 	}
 	
 	/**
-	 * Called at the end of the world renderer, copies the framebuffer into a second
+	 * Called at the end of the world render, copies the framebuffer into a second
 	 * buffer, applies post effects, and renders it back
 	 */
 	public static void doWorldProcessing() {
@@ -611,7 +610,7 @@ public class PostProcessPipeline {
 		fillGLBuffers();
 
 		// Copy the Minecraft framebuffer to the secondary world buffer
-		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_READ_FRAMEBUFFER, MC.getFramebuffer().framebufferObject);
+		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_READ_FRAMEBUFFER, mc.getFramebuffer().framebufferObject);
 		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_DRAW_FRAMEBUFFER, secondaryWorldBuffer.framebufferObject);
 
 		GLCompatible.glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, GL11.GL_COLOR_BUFFER_BIT,
@@ -644,12 +643,12 @@ public class PostProcessPipeline {
 		Shaders.postWorld.sendMatrix4AsUniform("inverseProjectionMatrix", false, PROJECTION_MATRIX_BUFFER);
 
 		// Render framebuffer back to main
-		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_DRAW_FRAMEBUFFER, MC.getFramebuffer().framebufferObject);
-		secondaryWorldBuffer.framebufferRender(MC.displayWidth, MC.displayHeight);
+		OpenGlHelper.glBindFramebuffer(GLCompatible.GL_DRAW_FRAMEBUFFER, mc.getFramebuffer().framebufferObject);
+		secondaryWorldBuffer.framebufferRender(mc.displayWidth, mc.displayHeight);
 		Shaders.postWorld.release();
 
 		// Rebind the MC Framebuffer
-		MC.getFramebuffer().bindFramebuffer(false);
+		mc.getFramebuffer().bindFramebuffer(false);
 
 		if(ModernConfigManager.enableAllShaders && ModernConfigManager.onScreenRainAndSnow)
 			drawRainBuffer();
@@ -657,14 +656,14 @@ public class PostProcessPipeline {
 
 	/**
 	 * Prepares the rain buffer by setting up an orthographic matrix in order to
-	 * renderer to screen coordinates
+	 * render to screen coordinates
 	 */
 	public static void prepareRainBuffer() {
 		rainBuffer.framebufferClear();
 		rainBuffer.bindFramebuffer(false);
 		GlStateManager.pushMatrix();
 
-		ScaledResolution scaledresolution = new ScaledResolution(MC);
+		ScaledResolution scaledresolution = new ScaledResolution(mc);
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
 		GlStateManager.ortho(0.0D, scaledresolution.getScaledWidth_double(), scaledresolution.getScaledHeight_double(), 0.0D, 1000.0D, 3000.0D);
@@ -694,18 +693,18 @@ public class PostProcessPipeline {
 	
 	
 	public static void drawRainBuffer() {
-		float rainStrength = MC.world.getRainStrength(MC.getRenderPartialTicks());
-		boolean isRain = ModernWeatherRenderer.isRainingOrSnowing(MC.player.getPosition());
+		float rainStrength = mc.world.getRainStrength(mc.getRenderPartialTicks());
+		boolean isRain = ModernWeatherRenderer.isRainingOrSnowing(mc.player.getPosition());
 	
-		// Cancels rain renderer when there are no drops left to dry and there
+		// Cancels rain render when there are no drops left to dry and there
 		// is no rain.
 		if(rainStrength == 0.0 && !rainKeepAlive)
 			return;
 
-		Biome playerBiome = MC.world.getBiome(MC.player.getPosition());
+		Biome playerBiome = mc.world.getBiome(mc.player.getPosition());
 
-		int playerHeight = MC.world.getHeight(MC.player.getPosition().getX(), MC.player.getPosition().getZ());
-		if (rainStrength != 0.0 && MC.player.getEyeHeight() + MC.player.posY > playerHeight
+		int playerHeight = mc.world.getHeight(mc.player.getPosition().getX(), mc.player.getPosition().getZ());
+		if (rainStrength != 0.0 && mc.player.getEyeHeight() + mc.player.posY > playerHeight
 				&& ((isRain && playerBiome.canRain()) || (!isRain && playerBiome.getEnableSnow()))) {
 
 			if (inRainTimestamp == -1) {
@@ -767,9 +766,9 @@ public class PostProcessPipeline {
 			rainKeepAlive = true;
 
 			if (raindrop[9] == 1) {
-				MC.getTextureManager().bindTexture(RAIN_DROP_TEXTURE);
+				mc.getTextureManager().bindTexture(RAIN_DROP_TEXTURE);
 			} else {
-				MC.getTextureManager().bindTexture(SNOW_FLAKE_TEXTURE);
+				mc.getTextureManager().bindTexture(SNOW_FLAKE_TEXTURE);
 			}
 
 			// Scale to size target
@@ -865,27 +864,27 @@ public class PostProcessPipeline {
 		GlStateManager.matrixMode(5889);
 		GlStateManager.loadIdentity();
 
-		float fpt = MC.entityRenderer.farPlaneDistance;
+		float fpt = mc.entityRenderer.farPlaneDistance;
 
-		float fovModValue = MC.entityRenderer.getFOVModifier(MC.getRenderPartialTicks(), false);;
+		float fovModValue = mc.entityRenderer.getFOVModifier(mc.getRenderPartialTicks(), false);;
 
-		Project.gluPerspective(fovModValue, (float) MC.displayWidth / (float) MC.displayHeight, 0.05F, fpt * 2.0F);
+		Project.gluPerspective(fovModValue, (float) mc.displayWidth / (float) mc.displayHeight, 0.05F, fpt * 2.0F);
 
-		// Project.gluPerspective(fovModValue, (float) MC.displayWidth / (float)
-		// MC.displayHeight, 0.05F, fpt * MathHelper.SQRT_2);
+		// Project.gluPerspective(fovModValue, (float) mc.displayWidth / (float)
+		// mc.displayHeight, 0.05F, fpt * MathHelper.SQRT_2);
 
-		// Project.gluPerspective(MC.gameSettings.fovSetting, (float) MC.displayWidth /
-		// (float) MC.displayHeight, 0.05F,
+		// Project.gluPerspective(mc.gameSettings.fovSetting, (float) mc.displayWidth /
+		// (float) mc.displayHeight, 0.05F,
 		// fpt * 2.0f);
 
 		// Project.gluPerspective(this.getFOVModifier(partialTicks, true),
-		// (float)this.MC.displayWidth / (float)this.MC.displayHeight, 0.05F,
+		// (float)this.mc.displayWidth / (float)this.mc.displayHeight, 0.05F,
 		// this.farPlaneDistance * MathHelper.SQRT_2);
 
 		GlStateManager.matrixMode(5888);
 		GlStateManager.alphaFunc(GL11.GL_GREATER, 0.1f);
 		GlStateManager.popMatrix();
-		MC.getFramebuffer().bindFramebuffer(false);
+		mc.getFramebuffer().bindFramebuffer(false);
 	}
 
 	/**
@@ -908,17 +907,17 @@ public class PostProcessPipeline {
 		if (shouldRecreateFramebuffer())
 			recreateFramebuffers();
 
-		// MC.player.world.play
+		// mc.player.world.play
 		// Draws rain droplets
 		// drawRainBuffer();
 
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlpha();
 
-		boolean isRain = MC.world.getBiomeProvider().getTemperatureAtHeight(MC.player.getPosition().getX(),
-				MC.player.getPosition().getZ()) >= 0.15F;
+		boolean isRain = mc.world.getBiomeProvider().getTemperatureAtHeight(mc.player.getPosition().getX(),
+				mc.player.getPosition().getZ()) >= 0.15F;
 
-		// Rain buffer which is used to renderer snow & rain on screen
+		// Rain buffer which is used to render snow & rain on screen
 		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + 3);
 		GlStateManager.bindTexture(rainBuffer.framebufferTexture);
 
@@ -928,7 +927,7 @@ public class PostProcessPipeline {
 
 		// Heat distortion texture
 		GlStateManager.setActiveTexture(GL13.GL_TEXTURE0 + 4);
-		MC.getTextureManager().bindTexture(HEAT_DISTORTION);
+		mc.getTextureManager().bindTexture(HEAT_DISTORTION);
 		GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
 
 		// Return to default texture unit
@@ -943,7 +942,7 @@ public class PostProcessPipeline {
 		Shaders.post.uniform1i("distortionBuffer", 5);
 
 		// Send variables as uniforms
-		Shaders.post.uniform2f("windowSize", 1.0f / MC.displayWidth, 1.0f / MC.displayHeight);
+		Shaders.post.uniform2f("windowSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
 		Shaders.post.boolean1b("isSnow", !isRain);
 		Shaders.post.uniform1f("timer", ClientValueRepo.TICKER.getLerpedFloat());
 		

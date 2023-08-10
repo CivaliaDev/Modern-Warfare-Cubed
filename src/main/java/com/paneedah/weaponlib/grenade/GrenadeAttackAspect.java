@@ -1,12 +1,11 @@
 package com.paneedah.weaponlib.grenade;
 
-import com.paneedah.mwc.network.NetworkPermitManager;
-import com.paneedah.mwc.network.messages.GrenadeMessage;
 import com.paneedah.weaponlib.CommonModContext;
 import com.paneedah.weaponlib.Explosion;
 import com.paneedah.weaponlib.ModContext;
 import com.paneedah.weaponlib.grenade.ItemGrenade.Type;
 import com.paneedah.weaponlib.state.Aspect;
+import com.paneedah.weaponlib.state.PermitManager;
 import com.paneedah.weaponlib.state.StateManager;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,7 +25,7 @@ import static com.paneedah.mwc.utils.ModReference.LOG;
  */
 public class GrenadeAttackAspect implements Aspect<GrenadeState, PlayerGrenadeInstance> {
 
-    
+    @SuppressWarnings("unused")
     private static final long ALERT_TIMEOUT = 300;
 
     private Predicate<PlayerGrenadeInstance> hasSafetyPin = instance -> instance.getWeapon().hasSafetyPin();
@@ -71,7 +70,7 @@ public class GrenadeAttackAspect implements Aspect<GrenadeState, PlayerGrenadeIn
     }
 
     @Override
-    public void setPermitManager(NetworkPermitManager permitManager) {}
+    public void setPermitManager(PermitManager permitManager) {}
 
     @Override
     public void setStateManager(StateManager<GrenadeState, ? super PlayerGrenadeInstance> stateManager) {

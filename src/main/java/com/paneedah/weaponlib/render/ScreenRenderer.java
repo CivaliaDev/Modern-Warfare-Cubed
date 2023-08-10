@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class ScreenRenderer {
 	
@@ -16,7 +16,7 @@ public class ScreenRenderer {
 		
 	
 		
-		//float bruh = (float) ((MC.player.ticksExisted%200)/200.0);
+		//float bruh = (float) ((mc.player.ticksExisted%200)/200.0);
         float scalef = 0.0625f;
 		
         GlStateManager.enableColorMaterial();
@@ -44,7 +44,7 @@ public class ScreenRenderer {
    
 
         
-        MC.renderEngine.bindTexture(loc);
+        mc.renderEngine.bindTexture(loc);
        
         
         model.render(null, (float) roll, (float) pitch, (float) yaw, 0.0f, 0.0f, scale);

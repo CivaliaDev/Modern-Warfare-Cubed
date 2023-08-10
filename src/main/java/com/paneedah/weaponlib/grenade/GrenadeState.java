@@ -1,6 +1,6 @@
 package com.paneedah.weaponlib.grenade;
 
-import com.paneedah.mwc.network.TypeRegistry;
+import com.paneedah.weaponlib.network.TypeRegistry;
 import com.paneedah.weaponlib.state.ManagedState;
 import io.netty.buffer.ByteBuf;
 
@@ -82,17 +82,17 @@ public enum GrenadeState implements ManagedState<GrenadeState> {
 	}
 
 	@Override
-	public void read(ByteBuf byteBuf) {
+	public void init(ByteBuf buf) {
 		// not need to initialize anything, type registry will take care of everything
 	}
 
 	@Override
-	public void write(ByteBuf byteBuf) {
-		// not need to write anything, parent type registry should take care of it
+	public void serialize(ByteBuf buf) {
+		// not need to serialize anything, parent type registry should take care of it
 	}
 
 	static {
-		TypeRegistry.getINSTANCE().register(GrenadeState.class);
+		TypeRegistry.getInstance().register(GrenadeState.class);
 	}
 
 

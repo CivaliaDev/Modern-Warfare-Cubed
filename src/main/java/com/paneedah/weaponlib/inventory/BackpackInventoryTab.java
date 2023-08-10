@@ -1,9 +1,8 @@
 package com.paneedah.weaponlib.inventory;
 
-import com.paneedah.mwc.equipment.inventory.EquipmentInventory;
-import com.paneedah.mwc.items.equipment.carryable.ItemBackpack;
+import com.paneedah.weaponlib.ItemStorage;
 import com.paneedah.weaponlib.ModContext;
-import com.paneedah.mwc.capabilities.EquipmentCapability;
+import com.paneedah.weaponlib.compatibility.CompatibleCustomPlayerInventoryCapability;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -18,13 +17,14 @@ public class BackpackInventoryTab extends InventoryTab {
 
     @Override
     public void onTabClicked() {
-        clientModContext.getChannel().sendToServer(new OpenCustomPlayerInventoryGuiMessage(GuiHandler.STORAGE_ITEM_INVENTORY_GUI_ID));
+        clientModContext.getChannel()
+                .sendToServer(new OpenCustomPlayerInventoryGuiMessage(GuiHandler.STORAGE_ITEM_INVENTORY_GUI_ID));
     }
 
     @Override
     public boolean shouldAddToList() {
         final ItemStack stackInSlot = getBackpackStackInSlot();
-        return stackInSlot != null && stackInSlot.getItem() instanceof ItemBackpack;
+        return stackInSlot != null && stackInSlot.getItem() instanceof ItemStorage;
     }
     
     @Override
@@ -33,7 +33,7 @@ public class BackpackInventoryTab extends InventoryTab {
     }
     
     protected static ItemStack getBackpackStackInSlot() {
-        EquipmentInventory customInventory = EquipmentCapability.getInventory(FMLClientHandler.instance().getClientPlayerEntity());
+        CustomPlayerInventory customInventory = CompatibleCustomPlayerInventoryCapability.getInventory(FMLClientHandler.instance().getClientPlayerEntity());
         return customInventory != null ? customInventory.getStackInSlot(0) : null;
     }
 }

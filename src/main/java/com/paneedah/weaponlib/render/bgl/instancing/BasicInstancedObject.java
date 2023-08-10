@@ -106,7 +106,7 @@ public abstract class BasicInstancedObject<K> {
 		// Render elements
 		GLCompatible.glDrawArraysInstanced(this.renderMode, 0, vao.getVertexCount(), primCount);
 		
-		// Tidy up renderer
+		// Tidy up render
 		postRender();
 		
 	}

@@ -2,7 +2,7 @@ package com.paneedah.weaponlib.vehicle.smoothlib;
 
 import com.paneedah.weaponlib.vehicle.jimphysics.InterpolationKit;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class PTIVal {
 	
@@ -20,7 +20,7 @@ public class PTIVal {
 	}
 	
 	public float getPTI() {
-		return (float) InterpolationKit.interpolateValue(prev, cur, MC.getRenderPartialTicks());
+		return (float) InterpolationKit.interpolateValue(prev, cur, mc.getRenderPartialTicks());
 	}
 
 }

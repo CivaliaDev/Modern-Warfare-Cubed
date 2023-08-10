@@ -51,7 +51,7 @@ public class MPXFactory implements GunFactory {
 		.withShellCasingVerticalOffset(-0.03f)
 //		.withShellCasingEjectEnabled(false)
 		.withInaccuracy(1f)
-		.withCreativeTab(MWC.WEAPONS_TAB)
+		.withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
 		.useNewSystem()
         .withRecoilParam(new RecoilParam(
 				// The weapon power

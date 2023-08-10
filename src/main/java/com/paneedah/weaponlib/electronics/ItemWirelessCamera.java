@@ -1,9 +1,7 @@
 package com.paneedah.weaponlib.electronics;
 
-import com.paneedah.mwc.renderer.ModelSourceTransforms;
-import com.paneedah.mwc.renderer.StaticModelSourceRendererRenderer;
+import com.paneedah.mwc.utils.ModReference;
 import com.paneedah.weaponlib.*;
-import com.paneedah.weaponlib.animation.Transform;
 import com.paneedah.weaponlib.crafting.CraftingComplexity;
 import com.paneedah.weaponlib.crafting.OptionsMetadata;
 import net.minecraft.client.model.ModelBase;
@@ -26,8 +24,6 @@ import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.paneedah.mwc.utils.ModReference.ID;
-
 public class ItemWirelessCamera extends Item implements ModelSource {
 
     public static final long DEFAULT_DURATION = 300 * 1000;
@@ -37,16 +33,18 @@ public class ItemWirelessCamera extends Item implements ModelSource {
         protected String name;
         protected ModelBase model;
         protected String textureName;
-        protected ModelSourceTransforms transforms = ModelSourceTransforms.builder()
-                .entityPositioning(itemStack -> new Transform()
-                        .withPosition(-0.5, -0.55, 0.5)
-                        .withScale(0.5, 0.5, 0.5)
-                        .doGLDirect())
-                .inventoryPositioning(itemStack -> new Transform()
-                        .withScale(2.25, 2.25, 2.25)
-                        .withPosition(-0.80, -0.7, 0)
-                        .doGLDirect())
-                .build();
+        protected Consumer<ItemStack> entityPositioning;
+        protected Consumer<ItemStack> inventoryPositioning;
+        protected BiConsumer<EntityPlayer, ItemStack> thirdPersonPositioning;
+        protected BiConsumer<EntityPlayer, ItemStack> firstPersonPositioning;
+        protected BiConsumer<ModelBase, ItemStack> firstPersonModelPositioning;
+        protected BiConsumer<ModelBase, ItemStack> thirdPersonModelPositioning;
+        protected BiConsumer<ModelBase, ItemStack> inventoryModelPositioning;
+        protected BiConsumer<ModelBase, ItemStack> entityModelPositioning;
+
+        protected Consumer<RenderContext<RenderableState>> firstPersonLeftHandPositioning;
+        protected Consumer<RenderContext<RenderableState>> firstPersonRightHandPositioning;
+
         protected CreativeTabs tab;
         protected AttachmentCategory attachmentCategory;
         private List<Tuple<ModelBase, String>> texturedModels = new ArrayList<>();
@@ -86,48 +84,51 @@ public class ItemWirelessCamera extends Item implements ModelSource {
         }
 
         public Builder withEntityPositioning(Consumer<ItemStack> entityPositioning) {
-            transforms.setEntityPositioning(entityPositioning);
+            this.entityPositioning = entityPositioning;
             return this;
         }
 
         public Builder withInventoryPositioning(Consumer<ItemStack> inventoryPositioning) {
-            transforms.setInventoryPositioning(inventoryPositioning);
+            this.inventoryPositioning = inventoryPositioning;
             return this;
         }
 
-        public Builder withThirdPersonPositioning(BiConsumer<EntityPlayer, ItemStack> thirdPersonPositioning) {
-            transforms.setThirdPersonPositioning(thirdPersonPositioning);
+        public  Builder withThirdPersonPositioning(BiConsumer<EntityPlayer, ItemStack> thirdPersonPositioning) {
+            this.thirdPersonPositioning = thirdPersonPositioning;
             return this;
         }
 
         public Builder withFirstPersonPositioning(BiConsumer<EntityPlayer, ItemStack> firstPersonPositioning) {
-            transforms.setFirstPersonPositioning(firstPersonPositioning);
+            this.firstPersonPositioning = firstPersonPositioning;
             return this;
         }
 
         public Builder withFirstPersonModelPositioning(BiConsumer<ModelBase, ItemStack> firstPersonModelPositioning) {
-            transforms.setFirstPersonModelPositioning(firstPersonModelPositioning);
+            this.firstPersonModelPositioning = firstPersonModelPositioning;
             return this;
         }
 
         public Builder withEntityModelPositioning(BiConsumer<ModelBase, ItemStack> entityModelPositioning) {
-            transforms.setEntityModelPositioning(entityModelPositioning);
+            this.entityModelPositioning = entityModelPositioning;
             return this;
         }
 
         public Builder withInventoryModelPositioning(BiConsumer<ModelBase, ItemStack> inventoryModelPositioning) {
-            transforms.setInventoryModelPositioning(inventoryModelPositioning);
+            this.inventoryModelPositioning = inventoryModelPositioning;
             return this;
         }
 
         public Builder withThirdPersonModelPositioning(BiConsumer<ModelBase, ItemStack> thirdPersonModelPositioning) {
-            transforms.setThirdPersonModelPositioning(thirdPersonModelPositioning);
+            this.thirdPersonModelPositioning = thirdPersonModelPositioning;
             return this;
         }
 
-        public Builder withFirstPersonHandPositioning(Consumer<RenderContext<RenderableState>> leftHand, Consumer<RenderContext<RenderableState>> rightHand) {
-            transforms.setFirstPersonLeftHandPositioning(leftHand);
-            transforms.setFirstPersonRightHandPositioning(rightHand);
+        public Builder withFirstPersonHandPositioning(
+                Consumer<RenderContext<RenderableState>> leftHand,
+                Consumer<RenderContext<RenderableState>> rightHand)
+        {
+            this.firstPersonLeftHandPositioning = leftHand;
+            this.firstPersonRightHandPositioning = rightHand;
             return this;
         }
 
@@ -136,18 +137,18 @@ public class ItemWirelessCamera extends Item implements ModelSource {
             return this;
         }
 
-        public Builder withCrafting(CraftingComplexity craftingComplexity, Object... craftingMaterials) {
+        public Builder withCrafting(CraftingComplexity craftingComplexity, Object...craftingMaterials) {
             return withCrafting(1, craftingComplexity, craftingMaterials);
         }
 
-        public Builder withCrafting(int craftingCount, CraftingComplexity craftingComplexity, Object... craftingMaterials) {
-            if (craftingComplexity == null) {
+        public Builder withCrafting(int craftingCount, CraftingComplexity craftingComplexity, Object...craftingMaterials) {
+            if(craftingComplexity == null) {
                 throw new IllegalArgumentException("Crafting complexity not set");
             }
-            if (craftingMaterials.length < 2) {
+            if(craftingMaterials.length < 2) {
                 throw new IllegalArgumentException("2 or more materials required for crafting");
             }
-            if (craftingCount == 0) {
+            if(craftingCount == 0) {
                 throw new IllegalArgumentException("Invalid item count");
             }
             this.craftingComplexity = craftingComplexity;
@@ -164,39 +165,39 @@ public class ItemWirelessCamera extends Item implements ModelSource {
         public ItemWirelessCamera build(ModContext modContext) {
 
             ItemWirelessCamera camera = new ItemWirelessCamera(this, modContext);
-            camera.setTranslationKey(ID + "_" + name);
+            camera.setTranslationKey(ModReference.ID + "_" + name);
             camera.setCreativeTab(tab);
 //            camera.setPostRenderer(postRenderer);
 //            camera.setName(name);
             camera.maxStackSize = maxStackSize;
 
 //            if(textureName != null) {
-//                camera.textureName = ID + ":" + stripFileExtension(textureName, ".png");
+//                camera.textureName = ModReference.id + ":" + stripFileExtension(textureName, ".png");
 //            }
 
             texturedModels.forEach(tm -> camera.texturedModels.add(new Tuple<>(tm.getU(), addFileExtension(tm.getV(), ".png"))));
 
-            if (model != null) {
+            if(model != null) {
                 texturedModels.add(new Tuple<>(model, addFileExtension(textureName, ".png")));
             }
 
-            if (model != null || !texturedModels.isEmpty()) {
-                modContext.registerRenderableItem(name, camera, FMLCommonHandler.instance().getSide() == Side.CLIENT ? new StaticModelSourceRendererRenderer(transforms) : null);
+            if(model != null || !texturedModels.isEmpty()) {
+                modContext.registerRenderableItem(name, camera, FMLCommonHandler.instance().getSide() == Side.CLIENT ? registerRenderer(camera, modContext) : null);
             }
 
-            if (craftingComplexity != null) {
+            if(craftingComplexity != null) {
                 OptionsMetadata optionsMetadata = new OptionsMetadata.OptionMetadataBuilder()
-                        .withSlotCount(9)
-                        .build(craftingComplexity, Arrays.copyOf(craftingMaterials, craftingMaterials.length));
+                    .withSlotCount(9)
+                    .build(craftingComplexity, Arrays.copyOf(craftingMaterials, craftingMaterials.length));
 
                 List<Object> shape = modContext.getRecipeManager().createShapedRecipe(camera, name, optionsMetadata);
 
                 ItemStack itemStack = new ItemStack(camera);
                 itemStack.setCount(craftingCount);
-                if (optionsMetadata.hasOres()) {
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, itemStack, shape.toArray()).setMirrored(false).setRegistryName(ID, itemStack.getItem().getTranslationKey() + "_recipe") /*TODO: temporary hack*/);
+                if(optionsMetadata.hasOres()) {
+                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, itemStack, shape.toArray()).setMirrored(false).setRegistryName(ModReference.ID, itemStack.getItem().getTranslationKey() + "_recipe") /*TODO: temporary hack*/);
                 } else {
-                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, itemStack, shape.toArray()).setMirrored(false).setRegistryName(ID, itemStack.getItem().getTranslationKey() + "_recipe"));
+                    ForgeRegistries.RECIPES.register(new ShapedOreRecipe(null, itemStack, shape.toArray()).setMirrored(false).setRegistryName(ModReference.ID, itemStack.getItem().getTranslationKey() + "_recipe"));
                 }
             }
 
@@ -210,6 +211,21 @@ public class ItemWirelessCamera extends Item implements ModelSource {
 
         protected static String stripFileExtension(String str, String extension) {
             return str.endsWith(extension) ? str.substring(0, str.length() - extension.length()) : str;
+        }
+
+        private Object registerRenderer(ItemWirelessCamera camera, ModContext modContext) {
+            return new StaticModelSourceRenderer.Builder()
+            .withEntityPositioning(entityPositioning)
+            .withFirstPersonPositioning(firstPersonPositioning)
+            .withThirdPersonPositioning(thirdPersonPositioning)
+            .withInventoryPositioning(inventoryPositioning)
+            .withEntityModelPositioning(entityModelPositioning)
+            .withFirstPersonModelPositioning(firstPersonModelPositioning)
+            .withThirdPersonModelPositioning(thirdPersonModelPositioning)
+            .withInventoryModelPositioning(inventoryModelPositioning)
+            .withFirstPersonHandPositioning(firstPersonLeftHandPositioning, firstPersonRightHandPositioning)
+            .withModContext(modContext)
+            .build();
         }
     }
 
@@ -230,7 +246,7 @@ public class ItemWirelessCamera extends Item implements ModelSource {
         itemStack.setCount(itemStack.getCount() - 1);
 
         if (!world.isRemote) {
-            if (player != null)
+            if(player != null)
                 player.world.spawnEntity(new EntityWirelessCamera(modContext, world, player, this, builder.duration));
         }
 

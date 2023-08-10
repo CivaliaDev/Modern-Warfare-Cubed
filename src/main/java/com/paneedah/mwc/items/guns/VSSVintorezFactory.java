@@ -50,7 +50,7 @@ public class VSSVintorezFactory {
         .withFlashOffsetX(() -> 0.1f)
         .withFlashOffsetY(() -> 0.11f)
         .withShootSoundVolume(1f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .useNewSystem()
         .withRecoilParam(new RecoilParam(
 				// The weapon power

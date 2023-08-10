@@ -2429,11 +2429,11 @@
       }
     ]
   },
-  "MClaren_senna_engine": {
+  "mclaren_senna_engine": {
     "category": "master",
     "sounds": [
       {
-       "name": "mwc:MClaren_senna_engine",
+       "name": "mwc:mclaren_senna_engine",
        "stream": false
       }
     ]

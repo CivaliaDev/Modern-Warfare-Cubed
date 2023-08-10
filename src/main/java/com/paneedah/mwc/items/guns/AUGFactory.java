@@ -43,7 +43,7 @@ public class AUGFactory implements GunFactory {
         .withFlashOffsetY(() -> 0.16f)
         .withShellCasingForwardOffset(0.05f)
         .withShellCasingVerticalOffset(-0.03f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .withInformationProvider(stack -> Arrays.asList(
         "Type: Bullpup Assault Rifle", 
         "Damage: 6", 

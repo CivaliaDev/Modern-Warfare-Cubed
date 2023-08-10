@@ -2,7 +2,6 @@ package com.paneedah.mwc.proxies;
 
 import com.paneedah.mwc.*;
 import com.paneedah.mwc.entities.Entities;
-import com.paneedah.mwc.equipment.*;
 import com.paneedah.mwc.init.MWCItems;
 import com.paneedah.mwc.items.melee.BaseballBatFactory;
 import com.paneedah.mwc.items.melee.BaseballBatNailsFactory;
@@ -15,7 +14,10 @@ import com.paneedah.mwc.weapons.Attachments;
 import com.paneedah.mwc.weapons.AuxiliaryAttachments;
 import com.paneedah.mwc.weapons.Guns;
 import com.paneedah.mwc.weapons.Magazines;
-import com.paneedah.mwc.weapons.Bullets;
+import com.paneedah.mwc.wearables.Armors;
+import com.paneedah.mwc.wearables.Backpacks;
+import com.paneedah.mwc.wearables.Bullets;
+import com.paneedah.mwc.wearables.Vests;
 import com.paneedah.weaponlib.UniversalSoundLookup;
 import com.paneedah.weaponlib.animation.SpecialAttachments;
 import com.paneedah.weaponlib.vehicle.network.VehicleDataSerializer;
@@ -92,8 +94,7 @@ public class CommonProxy {
 
         // Special object initialization
         SpecialAttachments.init(mod, MWC.modContext);
-        Backpacks.init();
-        Belts.init();
+        Backpacks.init(mod);
         Vests.init(mod);
         Armors.init(mod, MWC.modContext);
         Attachments.init(mod);
@@ -102,7 +103,7 @@ public class CommonProxy {
         Bullets.init(mod);
         Magazines.init(mod);
         Guns.init(mod, this);
-        Electronics.init();
+        Electronics.init(mod);
         Grenades.init(mod, this);
         CustomSpawnEggs.init(mod, this);
         TileEntities.init(this);

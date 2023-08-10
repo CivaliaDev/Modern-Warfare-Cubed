@@ -5,7 +5,7 @@ import com.paneedah.weaponlib.render.bgl.PostProcessPipeline;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class FirstPersonPerspective<S> extends Perspective<S> {
 
@@ -13,8 +13,8 @@ public class FirstPersonPerspective<S> extends Perspective<S> {
 
     public FirstPersonPerspective() {
         this.renderEndNanoTime = System.nanoTime();
-        this.width = MC.displayWidth;
-        this.height = MC.displayHeight;
+        this.width = mc.displayWidth;
+        this.height = mc.displayHeight;
     }
     
     protected void setSize(int width, int height) {
@@ -26,23 +26,23 @@ public class FirstPersonPerspective<S> extends Perspective<S> {
     public void update(TickEvent.RenderTickEvent event) {
         modContext.getSafeGlobals().renderingPhase.set(RenderingPhase.RENDER_PERSPECTIVE);
         long p_78471_2_ = this.renderEndNanoTime + (long)(1000000000 / 60);
-        int origDisplayWidth = MC.displayWidth;
-        int origDisplayHeight = MC.displayHeight;
+        int origDisplayWidth = mc.displayWidth;
+        int origDisplayHeight = mc.displayHeight;
 
-        //RenderGlobal origRenderGlobal = MC.renderGlobal;
-        EntityRenderer origEntityRenderer = MC.entityRenderer;
+        //RenderGlobal origRenderGlobal = mc.renderGlobal;
+        EntityRenderer origEntityRenderer = mc.entityRenderer;
 
         framebuffer.bindFramebuffer(true);
 
         
        
-        MC.displayWidth = width;
-        MC.displayHeight = height;
+        mc.displayWidth = width;
+        mc.displayHeight = height;
 
-        MC.entityRenderer = this.entityRenderer;
+        mc.entityRenderer = this.entityRenderer;
 
-        //MC.renderGlobal = this.renderGlobal;
-        //MC.effectRenderer = this.effectRenderer;
+        //mc.renderGlobal = this.renderGlobal;
+        //mc.effectRenderer = this.effectRenderer;
 
         this.entityRenderer.setPrepareTerrain(false);
         this.entityRenderer.updateRenderer();
@@ -78,7 +78,7 @@ public class FirstPersonPerspective<S> extends Perspective<S> {
 
        /*
         GlStateManager.pushMatrix();
-        EntityPlayer p = MC.player;
+        EntityPlayer p = mc.player;
         GlStateManager.translate(-p.posX, -p.posY, -p.posZ);
         GlStateManager.disableCull();
         GlStateManager.disableAlpha();
@@ -101,13 +101,13 @@ public class FirstPersonPerspective<S> extends Perspective<S> {
         GlStateManager.popMatrix();
         */
         
-        //MC.renderGlobal = origRenderGlobal;
-        //MC.effectRenderer = origEffectRenderer;
-        MC.entityRenderer = origEntityRenderer;
+        //mc.renderGlobal = origRenderGlobal;
+        //mc.effectRenderer = origEffectRenderer;
+        mc.entityRenderer = origEntityRenderer;
 
-        MC.getFramebuffer().bindFramebuffer(true);
-        MC.displayWidth = origDisplayWidth;
-        MC.displayHeight = origDisplayHeight;
+        mc.getFramebuffer().bindFramebuffer(true);
+        mc.displayWidth = origDisplayWidth;
+        mc.displayHeight = origDisplayHeight;
         this.renderEndNanoTime = System.nanoTime();
         
        

@@ -16,8 +16,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
-import static com.paneedah.mwc.utils.ModReference.ID;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 /**
  * $Id$
@@ -104,10 +103,10 @@ public class JSoundEngine {
 			return AL10.AL_FALSE;
 		}
 
-		ResourceLocation loc = new ResourceLocation(ID + ":sounds/m4a1.wav");
+		ResourceLocation loc = new ResourceLocation(ModReference.ID + ":sounds/m4a1.wav");
 		InputStream is = null;
 		try {
-			is = MC.getResourceManager().getResource(loc).getInputStream();
+			is = mc.getResourceManager().getResource(loc).getInputStream();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

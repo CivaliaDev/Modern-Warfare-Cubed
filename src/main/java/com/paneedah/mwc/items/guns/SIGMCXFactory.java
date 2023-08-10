@@ -24,7 +24,7 @@ public class SIGMCXFactory implements GunFactory {
 	public Item createGun(CommonProxy commonProxy) {
 		return new Weapon.Builder()
 		
-		.withName("sig_MCx")
+		.withName("sig_mcx")
 		//.withAmmoCapacity(30)
 		.withFireRate(0.75f)
 		.withRecoil(3f)
@@ -50,7 +50,7 @@ public class SIGMCXFactory implements GunFactory {
 		.withShellCasingForwardOffset(0.05f)
 		.withShellCasingVerticalOffset(-0.03f)
 //		.withShellCasingEjectEnabled(false)
-		.withCreativeTab(MWC.WEAPONS_TAB)
+		.withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
 		.useNewSystem()
 		.withRecoilParam(new RecoilParam(
 				// The weapon power
@@ -553,7 +553,7 @@ public class SIGMCXFactory implements GunFactory {
 			GL11.glTranslatef(-0.2F, -1.235F, -6.5F);
 			GL11.glScaled(1F, 1F, 1F);
 		})
-		.withTextureNames("sigMCx")
+		.withTextureNames("sigmcx")
 		.withRenderer(new WeaponRenderer.Builder()
 			
 			.withModel(new SIGMCX())
@@ -603,8 +603,8 @@ public class SIGMCXFactory implements GunFactory {
                 
                 )
                 
-                .setupModernAnimations("MCx", AuxiliaryAttachments.ScarAction)
-                .setupModernMagazineAnimations("MCx",
+                .setupModernAnimations("mcx", AuxiliaryAttachments.ScarAction)
+                .setupModernMagazineAnimations("mcx", 
                 		Magazines.M4A1Mag, 
                 		Magazines.M38Mag, 
                 		Magazines.Stanag100,

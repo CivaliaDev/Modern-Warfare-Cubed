@@ -1,6 +1,7 @@
 package com.paneedah.mwc.models;
 
 import com.paneedah.weaponlib.ModelWithAttachments;
+import com.paneedah.weaponlib.render.qrender.QRenderer;
 import net.minecraft.client.model.ModelBox;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.entity.Entity;
@@ -11,7 +12,7 @@ import net.minecraft.entity.Entity;
 
 
 public class UMP45Stock extends ModelWithAttachments {
-	private final ModelRenderer stock;
+	private final QRenderer stock;
 	private final ModelRenderer cube_r1;
 	private final ModelRenderer cube_r2;
 	private final ModelRenderer cube_r3;
@@ -34,7 +35,7 @@ public class UMP45Stock extends ModelWithAttachments {
 
 		
 
-		stock = new ModelRenderer(this);
+		stock = new QRenderer(this);
 		stock.setRotationPoint(0.0F, 23.0F, 17.05F);
 		stock.cubeList.add(new ModelBox(stock, 96, 94, -1.625F, -40.9F, -12.5F, 2, 1, 2, 0.002F, false));
 		stock.cubeList.add(new ModelBox(stock, 86, 5, -3.375F, -40.899F, -12.5F, 2, 1, 2, 0.001F, false));

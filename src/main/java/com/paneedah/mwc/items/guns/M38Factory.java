@@ -50,7 +50,7 @@ public class M38Factory implements GunFactory {
 		.withShellCasingForwardOffset(0.05f)
 		.withShellCasingVerticalOffset(-0.03f)
 //		.withShellCasingEjectEnabled(false)
-		.withCreativeTab(MWC.WEAPONS_TAB)
+		.withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
 		.useNewSystem()
 		.withRecoilParam(new RecoilParam(
 				// The weapon power

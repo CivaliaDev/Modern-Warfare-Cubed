@@ -49,7 +49,7 @@ public class KrissVectorFactory {
         .withFlashOffsetX(() -> 0.12f)
         .withFlashOffsetY(() -> 0.22f)
         .withInaccuracy(2f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .useNewSystem()
         .withRecoilParam(new RecoilParam(
 				// The weapon power
@@ -126,7 +126,7 @@ public class KrissVectorFactory {
         .withCompatibleAttachment(Attachments.VectorStockAdapter, (model) -> {
        	 if(model instanceof MilSpecStock) {
        		 GL11.glTranslatef(0.185f, 0.7f, 5.9f);
-                GL11.glScaled(0F, 0F, 0F);
+                GL11.glScaled(1.2F, 1.2F, 1.2F);
             } 
         })
         .withCompatibleAttachment(Magazines.VectorMag, (model) -> {

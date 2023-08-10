@@ -16,12 +16,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
-import static com.paneedah.mwc.utils.ModReference.ID;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class MuzzleFlashRenderer {
 	
-	public static ResourceLocation FLASH_SHEET = new ResourceLocation(ID + ":textures/flashes/sheet.png");
+	public static ResourceLocation FLASH_SHEET = new ResourceLocation(ModReference.ID + ":textures/flashes/sheet.png");
 
 	private static boolean assignedParameters = false;
 	
@@ -39,11 +38,11 @@ public class MuzzleFlashRenderer {
 		 
 		Weapon weapon = (Weapon) weaponItemStack.getItem();
 		
-		if(!(MC.world.getEntityByID(entityID) instanceof EntityPlayer)) {
+		if(!(mc.world.getEntityByID(entityID) instanceof EntityPlayer)) {
 			return;
 		}
 		
-		EntityPlayer player = (EntityPlayer) MC.world.getEntityByID(entityID);
+		EntityPlayer player = (EntityPlayer) mc.world.getEntityByID(entityID);
 		
 		
 		boolean isPetalFlash = weapon.hasFlashPedals();
@@ -57,7 +56,7 @@ public class MuzzleFlashRenderer {
 	
 		
 		
-		boolean shouldRenderCrossplane = MC.world.getEntityByID(entityID) != MC.player || MC.gameSettings.thirdPersonView != 0;
+		boolean shouldRenderCrossplane = mc.world.getEntityByID(entityID) != mc.player || mc.gameSettings.thirdPersonView != 0;
 		// Turn on all of the GL states
 		GlStateManager.pushMatrix();
 		//GlStateManager.depthMask(false);
@@ -74,7 +73,7 @@ public class MuzzleFlashRenderer {
 		}
 		GlStateManager.translate(muzzle.x, muzzle.y, muzzle.z);
 
-		MC.getTextureManager().bindTexture(FLASH_SHEET);
+		mc.getTextureManager().bindTexture(FLASH_SHEET);
 		
 		// This makes OpenGL sample linearly from
 		// the texture which makes it look nice instead
@@ -118,7 +117,7 @@ public class MuzzleFlashRenderer {
     	
     	
 		if(shouldRenderCrossplane && !isSuppressedFlash) {
-			// Only renderer if either in third person, or if it's on another player's
+			// Only render if either in third person, or if it's on another player's
 			// gun
 			int sideID = getRandomNumberBetween(6, 9);
 			
@@ -129,7 +128,7 @@ public class MuzzleFlashRenderer {
 	
 		if(isSuppressedFlash) {
 			Sprite suppressedSprite = SpriteSheetTools.getSquareSprite(0, 512, 512, 512);
-			MC.getTextureManager().bindTexture(new ResourceLocation(ID + ":textures/flashes/supre.png"));
+			mc.getTextureManager().bindTexture(new ResourceLocation(ModReference.ID + ":textures/flashes/supre.png"));
 	    	
 			//GlStateManager.disableTexture2D();
 	    	renderFlippedCrossPlane(suppressedSprite, 1, 0.0, 0, size/2, size/2);

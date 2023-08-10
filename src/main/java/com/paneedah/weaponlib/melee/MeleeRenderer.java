@@ -1,10 +1,11 @@
 package com.paneedah.weaponlib.melee;
 
+import com.paneedah.mwc.utils.ModReference;
 import com.paneedah.weaponlib.*;
 import com.paneedah.weaponlib.animation.*;
 import com.paneedah.weaponlib.animation.DebugPositioner.TransitionConfiguration;
 import com.paneedah.weaponlib.animation.MultipartPositioning.Positioner;
-import com.paneedah.mwc.renderer.ModelSourceRenderer;
+import com.paneedah.weaponlib.compatibility.ModelSourceRenderer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -33,8 +34,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
-import static com.paneedah.mwc.utils.ModReference.ID;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 import static com.paneedah.mwc.utils.ModReference.LOG;
 
 public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
@@ -500,7 +500,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 		this.builder = builder;
 		this.firstPersonStateManagers = new HashMap<>();
 		this.weaponTransitionProvider = new WeaponPositionProvider();
-		this.textureManager = MC.getTextureManager();
+		this.textureManager = mc.getTextureManager();
 		this.pair = Pair.of((IBakedModel) this, null);
 	}
 
@@ -720,7 +720,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 		}
 
 		if(builder.getTextureName() != null) {
-			MC.renderEngine.bindTexture(new ResourceLocation(ID + ":textures/models/" + builder.getTextureName()));
+			mc.renderEngine.bindTexture(new ResourceLocation(ModReference.ID + ":textures/models/" + builder.getTextureName()));
 		} else {
 			String textureName = null;
 			CompatibleAttachment<?> compatibleSkin = attachments.stream()
@@ -742,7 +742,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 				textureName = weapon.getTextureName();
 			}
 
-			MC.renderEngine.bindTexture(new ResourceLocation(ID
+			mc.renderEngine.bindTexture(new ResourceLocation(ModReference.ID
 					+ ":textures/models/" + textureName));
 		}
 
@@ -768,6 +768,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 		}
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void renderCompatibleAttachment(CompatibleAttachment<?> compatibleAttachment,
 			Positioner<Part, RenderContext<RenderableState>> positioner, RenderContext<RenderableState> renderContext) {
 
@@ -792,7 +793,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 		}
 
 		for(Tuple<ModelBase, String> texturedModel: compatibleAttachment.getAttachment().getTexturedModels()) {
-			MC.renderEngine.bindTexture(new ResourceLocation(ID
+			mc.renderEngine.bindTexture(new ResourceLocation(ModReference.ID
 					+ ":textures/models/" + texturedModel.getV()));
 			GL11.glPushMatrix();
 			GL11.glPushAttrib(GL11.GL_ENABLE_BIT | GL11.GL_CURRENT_BIT);
@@ -811,7 +812,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 			GL11.glPopMatrix();
 		}
 
-		
+		@SuppressWarnings("unchecked")
         CustomRenderer<RenderableState> postRenderer = (CustomRenderer<RenderableState>) compatibleAttachment.getAttachment().getPostRenderer();
 		if(postRenderer != null) {
 			GL11.glPushMatrix();
@@ -854,7 +855,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 
 	@Override
 	public TextureAtlasSprite getParticleTexture() {
-		return MC.getTextureMapBlocks().getMissingSprite();
+		return mc.getTextureMapBlocks().getMissingSprite();
 	}
 
 	@Override
@@ -929,7 +930,7 @@ public class MeleeRenderer extends ModelSourceRenderer implements IBakedModel {
 
 		GL11.glPushMatrix();
 
-		RenderContext<RenderableState> renderContext = new RenderContext<>(player, itemStack);
+		RenderContext<RenderableState> renderContext = new RenderContext<>(getClientModContext(), player, itemStack);
 
 		//float limbSwing, float flimbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, float scale
 		//0.0F, 0.0f, -0.4f, 0.0f, 0.0f, 0.08f);

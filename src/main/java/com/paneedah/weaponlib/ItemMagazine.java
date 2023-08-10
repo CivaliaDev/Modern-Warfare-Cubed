@@ -101,7 +101,7 @@ public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemIn
 		initializeTag(stack, 0);
 	}
 
-	public List<ItemBullet> getCompatibleBullets() {
+	List<ItemBullet> getCompatibleBullets() {
 		return compatibleBullets;
 	}
 

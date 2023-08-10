@@ -2,7 +2,7 @@ package com.paneedah.weaponlib.numerical;
 
 import com.paneedah.weaponlib.animation.MatrixHelper;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class LerpedValue {
 	
@@ -46,7 +46,7 @@ public class LerpedValue {
 	}
 	
 	public double getLerped() {
-		return MatrixHelper.solveLerp(this.previousValue, this.currentValue, MC.getRenderPartialTicks());
+		return MatrixHelper.solveLerp(this.previousValue, this.currentValue, mc.getRenderPartialTicks());
 	}
 	
 	public float getLerpedFloat() {

@@ -144,17 +144,17 @@ public class GLCompatible {
 	}
 	
 
-	public static void glDrawArraysInstanced(int mode, int first, int count, int priMCount) {
+	public static void glDrawArraysInstanced(int mode, int first, int count, int primcount) {
 		switch (instancingType) {
 		case NORMAL:
-			GL31.glDrawArraysInstanced(mode, first, count, priMCount);
+			GL31.glDrawArraysInstanced(mode, first, count, primcount);
 			break;
 		case ARB:
 			
-			ARBDrawInstanced.glDrawArraysInstancedARB(mode, first, count, priMCount);
+			ARBDrawInstanced.glDrawArraysInstancedARB(mode, first, count, primcount);
 			break;
 		case EXT:
-			EXTDrawInstanced.glDrawArraysInstancedEXT(mode, first, count, priMCount);
+			EXTDrawInstanced.glDrawArraysInstancedEXT(mode, first, count, primcount);
 			break;
 		}
 	}

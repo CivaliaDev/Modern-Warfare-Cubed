@@ -43,7 +43,7 @@ public class STG44Factory {
         .withFlashOffsetX(() -> 0.12f)
         .withFlashOffsetY(() -> 0.14f)
         .withInaccuracy(1f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .withInformationProvider(stack -> Arrays.asList(
         "Type: Assault rifle",
         "Damage: 7.7", 

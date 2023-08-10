@@ -1,13 +1,11 @@
 package com.paneedah.weaponlib.melee;
 
-import com.paneedah.mwc.network.NetworkPermitManager;
-import com.paneedah.mwc.network.messages.BloodClientMessage;
-import com.paneedah.mwc.network.messages.MeleeAttackMessage;
 import com.paneedah.weaponlib.CommonModContext;
 import com.paneedah.weaponlib.ModContext;
+import com.paneedah.weaponlib.particle.SpawnParticleMessage;
 import com.paneedah.weaponlib.state.Aspect;
+import com.paneedah.weaponlib.state.PermitManager;
 import com.paneedah.weaponlib.state.StateManager;
-import io.redstudioragnarok.redcore.vectors.Vector3F;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
@@ -24,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 import static com.paneedah.mwc.utils.ModReference.LOG;
 
 /*
@@ -36,7 +34,7 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
 
     private static final long HEAVY_STUB_DURATION = 250;
 
-    
+    @SuppressWarnings("unused")
     private static final long ALERT_TIMEOUT = 300;
 
     private static Predicate<PlayerMeleeInstance> attackTimeoutExpired =
@@ -81,7 +79,7 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
     }
 
     @Override
-    public void setPermitManager(NetworkPermitManager permitManager) {}
+    public void setPermitManager(PermitManager permitManager) {}
 
     @Override
     public void setStateManager(StateManager<MeleeState, ? super PlayerMeleeInstance> stateManager) {
@@ -149,7 +147,7 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
         }
     }
 
-    
+    @SuppressWarnings("unused")
     private void cannotAttack(PlayerMeleeInstance meleeInstance) {
         modContext.getStatusMessageCenter().addAlertMessage(I18n.translateToLocalFormatted("gui.coolingDown"), 2, 200, 100);
         meleeInstance.getPlayer().playSound(modContext.getNoAmmoSound(), 1, 1);
@@ -162,10 +160,10 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
 
     @SideOnly(Side.CLIENT)
     private void attackClient(PlayerMeleeInstance meleeInstance, boolean isHeavyAttack) {
-        RayTraceResult objectMouseOver = MC.objectMouseOver;
+        RayTraceResult objectMouseOver = mc.objectMouseOver;
 
         if (objectMouseOver != null) {
-            EntityPlayer player = MC.player;
+            EntityPlayer player = mc.player;
             World world = player.world;
             player.playSound(isHeavyAttack ? meleeInstance.getWeapon().getHeavyAtackSound() : meleeInstance.getWeapon().getLightAtackSound(), 1, 1);
 
@@ -176,7 +174,7 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
                     break;
                 case BLOCK:
                     if (!world.isAirBlock(objectMouseOver.getBlockPos())) {
-                        MC.playerController.clickBlock(objectMouseOver.getBlockPos(), objectMouseOver.sideHit);
+                        mc.playerController.clickBlock(objectMouseOver.getBlockPos(), objectMouseOver.sideHit);
                     }
                 default:
                     break;
@@ -185,8 +183,9 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
     }
 
     private void attackEntity(Entity entity, EntityPlayer player, PlayerMeleeInstance instance, boolean isHeavyAttack) {
-        modContext.getChannel().sendToServer(new MeleeAttackMessage(instance, entity.getEntityId(), isHeavyAttack));
-        entity.attackEntityFrom(DamageSource.causePlayerDamage(player), instance.getWeapon().getDamage(isHeavyAttack));
+        modContext.getChannel().sendToServer(new TryAttackMessage(instance, entity, isHeavyAttack));
+        entity.attackEntityFrom(DamageSource.causePlayerDamage(player),
+                instance.getWeapon().getDamage(isHeavyAttack));
     }
 
     public void serverAttack(EntityPlayer player, PlayerMeleeInstance instance, Entity entity, boolean isHeavyAttack) {
@@ -204,7 +203,13 @@ public class MeleeAttackAspect implements Aspect<MeleeState, PlayerMeleeInstance
         int count = getParticleCount (damage);
         LOG.debug("Generating {} particle(s) per damage {}", count, damage);
 
-        modContext.getChannel().sendToAllAround(new BloodClientMessage(new Vector3F((float) (entity.posX - motionX / 2), (float) (entity.posY - motionY / 2) + 1, (float) (entity.posZ - motionZ / 2)), new Vector3F((float) motionX / 16, (float) motionY / 16, (float) motionZ / 16)), point);
+        modContext.getChannel().sendToAllAround(new SpawnParticleMessage(
+                SpawnParticleMessage.ParticleType.BLOOD,
+                count,
+                entity.posX - motionX / 2,
+                entity.posY - motionY / 2,
+                entity.posZ - motionZ / 2),
+                point);
     }
 
     int getParticleCount(float damage) {

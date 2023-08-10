@@ -7,7 +7,7 @@ import com.paneedah.weaponlib.compatibility.CompatibleDataManager;
 import com.paneedah.weaponlib.grenade.GrenadeAttackAspect;
 import com.paneedah.weaponlib.grenade.ItemGrenade;
 import com.paneedah.weaponlib.grenade.PlayerGrenadeInstance;
-import com.paneedah.mwc.network.messages.EntityPickupMessage;
+import com.paneedah.weaponlib.network.packets.HighIQPickupPacket;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.entity.*;
@@ -315,7 +315,7 @@ public class EntityCustomMob extends EntityMob implements IRangedAttackMob, Cont
         }
     }
 
-    
+    @SuppressWarnings("unchecked")
     private void initWeaponWithAttachments(Equipment equipment, ItemStack itemStack) {
         if (equipment.attachments != null && equipment.item instanceof Weapon
                 && equipment.item instanceof PlayerItemInstanceFactory) {
@@ -604,7 +604,7 @@ public class EntityCustomMob extends EntityMob implements IRangedAttackMob, Cont
         
         	
     
-        	modContext.getChannel().sendToServer(new EntityPickupMessage(player.getEntityId(), getEntityId()));
+        	modContext.getChannel().sendToServer(new HighIQPickupPacket(player.getEntityId(), getEntityId()));
         	
         	return true;
         }

@@ -1,16 +1,14 @@
 package com.paneedah.weaponlib;
 
 import com.paneedah.mwc.MWC;
-import com.paneedah.mwc.capabilities.EquipmentCapability;
-import com.paneedah.mwc.network.NetworkPermitManager;
-import com.paneedah.mwc.network.handlers.*;
-import com.paneedah.mwc.network.messages.*;
+import com.paneedah.mwc.utils.ModReference;
 import com.paneedah.weaponlib.MagazineReloadAspect.LoadPermit;
 import com.paneedah.weaponlib.WeaponAttachmentAspect.ChangeAttachmentPermit;
 import com.paneedah.weaponlib.WeaponAttachmentAspect.EnterAttachmentModePermit;
 import com.paneedah.weaponlib.WeaponAttachmentAspect.ExitAttachmentModePermit;
 import com.paneedah.weaponlib.WeaponReloadAspect.CompoundPermit;
 import com.paneedah.weaponlib.WeaponReloadAspect.UnloadPermit;
+import com.paneedah.weaponlib.compatibility.CompatibleCustomPlayerInventoryCapability;
 import com.paneedah.weaponlib.compatibility.CompatibleExposureCapability;
 import com.paneedah.weaponlib.compatibility.CompatibleExtraEntityFlags;
 import com.paneedah.weaponlib.compatibility.CompatiblePlayerEntityTrackerProvider;
@@ -24,16 +22,17 @@ import com.paneedah.weaponlib.electronics.*;
 import com.paneedah.weaponlib.grenade.*;
 import com.paneedah.weaponlib.inventory.*;
 import com.paneedah.weaponlib.melee.*;
-import com.paneedah.mwc.network.TypeRegistry;
+import com.paneedah.weaponlib.network.NetworkPermitManager;
+import com.paneedah.weaponlib.network.PermitMessage;
+import com.paneedah.weaponlib.network.TypeRegistry;
+import com.paneedah.weaponlib.network.packets.*;
+import com.paneedah.weaponlib.particle.SpawnParticleMessage;
+import com.paneedah.weaponlib.particle.SpawnParticleMessageHandler;
 import com.paneedah.weaponlib.state.Permit;
 import com.paneedah.weaponlib.state.StateManager;
 import com.paneedah.weaponlib.tracking.SyncPlayerEntityTrackerMessage;
 import com.paneedah.weaponlib.tracking.SyncPlayerEntityTrackerMessageMessageHandler;
-import com.paneedah.weaponlib.vehicle.network.VehicleControlPacket;
-import com.paneedah.weaponlib.vehicle.network.VehicleControlPacketHandler;
-import com.paneedah.weaponlib.vehicle.network.VehicleInteractPHandler;
-import com.paneedah.weaponlib.vehicle.network.VehicleInteractPacket;
-import lombok.Getter;
+import com.paneedah.weaponlib.vehicle.network.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -56,35 +55,33 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
-import static com.paneedah.mwc.utils.ModReference.ID;
-
 public class CommonModContext implements ModContext {
 
     static {
-        TypeRegistry.getINSTANCE().register(LoadPermit.class);
-        TypeRegistry.getINSTANCE().register(MagazineState.class);
-        TypeRegistry.getINSTANCE().register(PlayerItemInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerWeaponInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerMagazineInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerWeaponInstance.class);
-        TypeRegistry.getINSTANCE().register(Permit.class);
-        TypeRegistry.getINSTANCE().register(EnterAttachmentModePermit.class);
-        TypeRegistry.getINSTANCE().register(ExitAttachmentModePermit.class);
-        TypeRegistry.getINSTANCE().register(ChangeAttachmentPermit.class);
-        TypeRegistry.getINSTANCE().register(CompoundPermit.class);
-        TypeRegistry.getINSTANCE().register(UnloadPermit.class);
-        TypeRegistry.getINSTANCE().register(LoadPermit.class);
-        TypeRegistry.getINSTANCE().register(PlayerWeaponInstance.class);
-        TypeRegistry.getINSTANCE().register(WeaponState.class);
-        TypeRegistry.getINSTANCE().register(PlayerMeleeInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerGrenadeInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerTabletInstance.class);
-        TypeRegistry.getINSTANCE().register(PlayerHandheldInstance.class);
-        TypeRegistry.getINSTANCE().register(MeleeState.class);
-        TypeRegistry.getINSTANCE().register(TabletState.class);
-        TypeRegistry.getINSTANCE().register(HandheldState.class);
-        TypeRegistry.getINSTANCE().register(SpreadableExposure.class);
-        TypeRegistry.getINSTANCE().register(LightExposure.class);
+        TypeRegistry.getInstance().register(LoadPermit.class);
+        TypeRegistry.getInstance().register(MagazineState.class);
+        TypeRegistry.getInstance().register(PlayerItemInstance.class);
+        TypeRegistry.getInstance().register(PlayerWeaponInstance.class);
+        TypeRegistry.getInstance().register(PlayerMagazineInstance.class);
+        TypeRegistry.getInstance().register(PlayerWeaponInstance.class);
+        TypeRegistry.getInstance().register(Permit.class);
+        TypeRegistry.getInstance().register(EnterAttachmentModePermit.class);
+        TypeRegistry.getInstance().register(ExitAttachmentModePermit.class);
+        TypeRegistry.getInstance().register(ChangeAttachmentPermit.class);
+        TypeRegistry.getInstance().register(CompoundPermit.class);
+        TypeRegistry.getInstance().register(UnloadPermit.class);
+        TypeRegistry.getInstance().register(LoadPermit.class);
+        TypeRegistry.getInstance().register(PlayerWeaponInstance.class);
+        TypeRegistry.getInstance().register(WeaponState.class);
+        TypeRegistry.getInstance().register(PlayerMeleeInstance.class);
+        TypeRegistry.getInstance().register(PlayerGrenadeInstance.class);
+        TypeRegistry.getInstance().register(PlayerTabletInstance.class);
+        TypeRegistry.getInstance().register(PlayerHandheldInstance.class);
+        TypeRegistry.getInstance().register(MeleeState.class);
+        TypeRegistry.getInstance().register(TabletState.class);
+        TypeRegistry.getInstance().register(HandheldState.class);
+        TypeRegistry.getInstance().register(SpreadableExposure.class);
+        TypeRegistry.getInstance().register(LightExposure.class);
     }
 
     static class BulletImpactSoundKey {
@@ -133,7 +130,7 @@ public class CommonModContext implements ModContext {
 
 	protected MagazineReloadAspect magazineReloadAspect;
 
-	@Getter protected NetworkPermitManager permitManager;
+	protected NetworkPermitManager permitManager;
 
 	protected PlayerItemInstanceRegistry playerItemInstanceRegistry;
 
@@ -218,11 +215,11 @@ public class CommonModContext implements ModContext {
 		
 		channel.registerMessage(new TryFireMessageHandler(weaponFireAspect), TryFireMessage.class, 11, Side.SERVER);
 
-		channel.registerMessage(new PermitMessageClientHandler(this), PermitMessage.class, 14, Side.CLIENT);
+		channel.registerMessage(permitManager, PermitMessage.class, 14, Side.SERVER);
 
-		channel.registerMessage(new PermitMessageServerHandler(this), PermitMessage.class, 15, Side.SERVER);
+		channel.registerMessage(permitManager, PermitMessage.class, 15, Side.CLIENT);
 
-		channel.registerMessage(new MeleeAttackMessageHandler(meleeAttackAspect), MeleeAttackMessage.class, 16, Side.SERVER);
+		channel.registerMessage(new TryAttackMessageHandler(meleeAttackAspect), TryAttackMessage.class, 16, Side.SERVER);
 
 		channel.registerMessage(new SyncPlayerEntityTrackerMessageMessageHandler(this), SyncPlayerEntityTrackerMessage.class, 17, Side.CLIENT);
 
@@ -234,7 +231,7 @@ public class CommonModContext implements ModContext {
 
 		channel.registerMessage(new ExplosionMessageHandler(this), ExplosionMessage.class, 21, Side.CLIENT);
 		
-		channel.registerMessage(new NightVisionToggleMessageHandler(), NightVisionToggleMessage.class, 22, Side.SERVER);
+		channel.registerMessage(new ArmorControlHandler(), ArmorControlMessage.class, 22, Side.SERVER);
 		
 //		channel.registerMessage(new SpreadableExposureMessageHandler(this),	SpreadableExposureMessage.class, 23, Side.CLIENT);
 		
@@ -252,34 +249,34 @@ public class CommonModContext implements ModContext {
 		
         channel.registerMessage(new VehicleControlPacketHandler(this), VehicleControlPacket.class, 34, Side.SERVER);
 
-        channel.registerMessage(new VehicleClientMessageHandler(), VehicleClientMessage.class, 35, Side.CLIENT);
+        channel.registerMessage(new VehicleClientPacketHandler(), VehicleClientPacket.class, 35, Side.CLIENT);
         
         channel.registerMessage(new VehicleInteractPHandler(this), VehicleInteractPacket.class, 36, Side.SERVER);
         
-        channel.registerMessage(new MuzzleFlashMessageHandler(), MuzzleFlashMessage.class, 37, Side.CLIENT);
+        channel.registerMessage(new GunFXPacket.GunFXPacketHandler(), GunFXPacket.class, 37, Side.CLIENT);
         
-        channel.registerMessage(new ShellMessageHandler(), ShellMessageClient.class, 38, Side.CLIENT);
+        channel.registerMessage(new BulletShellClient.GunFXPacketHandler(), BulletShellClient.class, 38, Side.CLIENT);
         
-        channel.registerMessage(new BalancePackClientMessageHandler(), BalancePackClientMessage.class, 39, Side.CLIENT);
+        channel.registerMessage(new BalancePackClient.BalancePacketHandler(), BalancePackClient.class, 39, Side.CLIENT);
 
-        channel.registerMessage(new HeadshotSFXMessageHandler(), HeadshotSFXMessage.class, 40, Side.CLIENT);
+        channel.registerMessage(new HeadshotSFXPacket.GunFXPacketHandler(), HeadshotSFXPacket.class, 40, Side.CLIENT);
 
-        channel.registerMessage(new BloodClientMessageHandler(), BloodClientMessage.class, 41, Side.CLIENT);
+        channel.registerMessage(new BloodPacketClient.BalancePacketHandler(), BloodPacketClient.class, 41, Side.CLIENT);
         
-        channel.registerMessage(new OpenDoorMessageHandler(), OpenDoorMessage.class, 42, Side.SERVER);
+        channel.registerMessage(new OpenDoorPacket.OpenDoorPacketHandler(), OpenDoorPacket.class, 42, Side.SERVER);
 
-        channel.registerMessage(new WorkbenchServerMessageHandler(this), WorkbenchServerMessage.class, 43, Side.SERVER);
+        channel.registerMessage(new StationPacket.WorkbenchPacketHandler(this), StationPacket.class, 43, Side.SERVER);
         
-        channel.registerMessage(new WorkbenchClientMessageHandler(), WorkbenchClientMessage.class, 44, Side.CLIENT);
+        channel.registerMessage(new StationClientPacket.WorkshopClientPacketHandler(), StationClientPacket.class, 44, Side.CLIENT);
         
-        channel.registerMessage(new CraftingClientMessageHandler(this), CraftingClientMessage.class, 45, Side.CLIENT);
+        channel.registerMessage(new CraftingClientPacket.SimplePacketHandler(this), CraftingClientPacket.class, 45, Side.CLIENT);
         
-        channel.registerMessage(new CraftingServerMessageHandler(this), CraftingServerMessage.class, 46, Side.SERVER);
+        channel.registerMessage(new CraftingServerPacket.SimplePacketHandler(this), CraftingServerPacket.class, 46, Side.SERVER);
         
-        channel.registerMessage(new EntityPickupMessageHandler(), EntityPickupMessage.class, 47, Side.SERVER);
+        channel.registerMessage(new HighIQPickupPacket.SimplePacketHandler(), HighIQPickupPacket.class, 47, Side.SERVER);
         
         
-		CommonEventHandler serverHandler = new CommonEventHandler(this);
+		ServerEventHandler serverHandler = new ServerEventHandler(this);
         MinecraftForge.EVENT_BUS.register(serverHandler);
         MinecraftForge.EVENT_BUS.register(serverHandler);
 
@@ -290,17 +287,17 @@ public class CommonModContext implements ModContext {
 		//CompatibleEntityPropertyProvider.register(this);
 		CompatibleExposureCapability.register(this);
 		CompatibleExtraEntityFlags.register(this);
-		EquipmentCapability.register();
+		CompatibleCustomPlayerInventoryCapability.register(this);
 
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "ammo" + modEntityID), WeaponSpawnEntity.class, "Ammo" + modEntityID, modEntityID++, mod, 64, 3, true);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "wcam" + modEntityID), EntityWirelessCamera.class, "wcam" + modEntityID, modEntityID++, mod, 200, 3, true);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "ShellCasing" + modEntityID), EntityShellCasing.class, "ShellCasing" + modEntityID, modEntityID++, mod, 64, 500, true);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "Grenade" + modEntityID), EntityGrenade.class, "Grenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "SmokeGrenade" + modEntityID), EntitySmokeGrenade.class, "SmokeGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "GasGrenade" + modEntityID), EntityGasGrenade.class, "GasGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "FlashGrenade" + modEntityID), EntityFlashGrenade.class, "FlashGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "ammo" + modEntityID), WeaponSpawnEntity.class, "Ammo" + modEntityID, modEntityID++, mod, 64, 3, true);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "wcam" + modEntityID), EntityWirelessCamera.class, "wcam" + modEntityID, modEntityID++, mod, 200, 3, true);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "ShellCasing" + modEntityID), EntityShellCasing.class, "ShellCasing" + modEntityID, modEntityID++, mod, 64, 500, true);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "Grenade" + modEntityID), EntityGrenade.class, "Grenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "SmokeGrenade" + modEntityID), EntitySmokeGrenade.class, "SmokeGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "GasGrenade" + modEntityID), EntityGasGrenade.class, "GasGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "FlashGrenade" + modEntityID), EntityFlashGrenade.class, "FlashGrenade" + modEntityID, modEntityID++, mod, 64, 10000, false);
 
-        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ID, "EntitySpreadable" + modEntityID), EntitySpreadable.class, "EntitySpreadable" + modEntityID, modEntityID++, mod, 64, 3, false);
+        net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(ModReference.ID, "EntitySpreadable" + modEntityID), EntitySpreadable.class, "EntitySpreadable" + modEntityID, modEntityID++, mod, 64, 3, false);
 
         //compatibility.registerModEntity(EntityVehicle.class, "EntityVehicle" + modEntityID, modEntityID++, mod, 64, 3, false);
 
@@ -340,15 +337,15 @@ public class CommonModContext implements ModContext {
 	@Override
 	public void preInitEnd(Object mod, SimpleNetworkWrapper channel) {
         // Workbench
-		GameRegistry.registerTileEntity(TileEntityWorkbench.class, ID + ":tileworkbench");
-        Block workbenchblock = new WorkbenchBlock(this, "weapon_workbench", Material.WOOD).setCreativeTab(MWC.BLOCKS_AND_INGOTS_TAB);
+		GameRegistry.registerTileEntity(TileEntityWorkbench.class, ModReference.ID + ":tileworkbench");
+        Block workbenchblock = new WorkbenchBlock(this, "weapon_workbench", Material.WOOD).setCreativeTab(MWC.BLOCKS_TAB);
         if (workbenchblock.getRegistryName() == null) {
-            if (workbenchblock.getTranslationKey().length() < ID.length() + 2 + 5) {
+            if (workbenchblock.getTranslationKey().length() < ModReference.ID.length() + 2 + 5) {
                 throw new IllegalArgumentException("Unlocalize block name too short " + workbenchblock.getTranslationKey());
             }
             String unlocalizedName = workbenchblock.getTranslationKey().toLowerCase();
-            String registryName = unlocalizedName.substring(5 + ID.length() + 1);
-            workbenchblock.setRegistryName(ID, registryName);
+            String registryName = unlocalizedName.substring(5 + ModReference.ID.length() + 1);
+            workbenchblock.setRegistryName(ModReference.ID, registryName);
         }
 
         ForgeRegistries.BLOCKS.register(workbenchblock);
@@ -356,16 +353,16 @@ public class CommonModContext implements ModContext {
         this.registerRenderableItem(workbenchblock.getRegistryName(), workbenchItemBlock, null);
 
         // Ammo press
-		GameRegistry.registerTileEntity(TileEntityAmmoPress.class, ID + ":tileammopress");
-        Block ammopressblock = new BlockAmmoPress(this, "ammo_press", Material.IRON).setCreativeTab(MWC.BLOCKS_AND_INGOTS_TAB);
+		GameRegistry.registerTileEntity(TileEntityAmmoPress.class, ModReference.ID + ":tileammopress");
+        Block ammopressblock = new BlockAmmoPress(this, "ammo_press", Material.IRON).setCreativeTab(MWC.BLOCKS_TAB);
 
         if (ammopressblock.getRegistryName() == null) {
-            if (ammopressblock.getTranslationKey().length() < ID.length() + 2 + 5) {
+            if (ammopressblock.getTranslationKey().length() < ModReference.ID.length() + 2 + 5) {
                 throw new IllegalArgumentException("Unlocalize block name too short " + ammopressblock.getTranslationKey());
             }
             String unlocalizedName = ammopressblock.getTranslationKey().toLowerCase();
-            String registryName = unlocalizedName.substring(5 + ID.length() + 1);
-            ammopressblock.setRegistryName(ID, registryName);
+            String registryName = unlocalizedName.substring(5 + ModReference.ID.length() + 1);
+            ammopressblock.setRegistryName(ModReference.ID, registryName);
         }
 
         ForgeRegistries.BLOCKS.register(ammopressblock);
@@ -397,7 +394,7 @@ public class CommonModContext implements ModContext {
 	    if(sound == null) {
 	        return null;
 	    }
-		ResourceLocation soundResourceLocation = new ResourceLocation(ID, sound);
+		ResourceLocation soundResourceLocation = new ResourceLocation(ModReference.ID, sound);
 		return registerSound(soundResourceLocation);
 	}
 
@@ -414,7 +411,7 @@ public class CommonModContext implements ModContext {
 
 	@Override
 	public void registerWeapon(String name, Weapon weapon, WeaponRenderer renderer) {
-        weapon.setRegistryName(ID, name); // temporary hack
+        weapon.setRegistryName(ModReference.ID, name); // temporary hack
         ForgeRegistries.ITEMS.register(weapon);
 	}
 
@@ -438,7 +435,7 @@ public class CommonModContext implements ModContext {
 
     @Override
 	public void registerRenderableItem(String name, Item item, Object renderer) {
-        item.setRegistryName(ID, name); // temporary hack
+        item.setRegistryName(ModReference.ID, name); // temporary hack
         ForgeRegistries.ITEMS.register(item);
 	}
 	
@@ -571,19 +568,19 @@ public class CommonModContext implements ModContext {
 
     @Override
     public void registerMeleeWeapon(String name, ItemMelee itemMelee, MeleeRenderer renderer) {
-        itemMelee.setRegistryName(ID, name); // temporary hack
+        itemMelee.setRegistryName(ModReference.ID, name); // temporary hack
         ForgeRegistries.ITEMS.register(itemMelee);
     }
 
     @Override
     public void registerGrenadeWeapon(String name, ItemGrenade itemMelee, GrenadeRenderer renderer) {
-        itemMelee.setRegistryName(ID, name); // temporary hack
+        itemMelee.setRegistryName(ModReference.ID, name); // temporary hack
         ForgeRegistries.ITEMS.register(itemMelee);
     }
 
     @Override
     public ResourceLocation getNamedResource(String name) {
-        return new ResourceLocation(ID, name);
+        return new ResourceLocation(ModReference.ID, name);
     }
 
     @Override

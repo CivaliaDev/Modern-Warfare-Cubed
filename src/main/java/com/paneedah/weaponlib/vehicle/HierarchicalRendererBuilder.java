@@ -18,8 +18,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static com.paneedah.mwc.utils.ModReference.ID;
-
 public class HierarchicalRendererBuilder<Part, State extends RenderState> {
 
     protected static final int DEFAULT_DURATION = 100;
@@ -152,7 +150,7 @@ public class HierarchicalRendererBuilder<Part, State extends RenderState> {
 
     public HierarchicalRendererBuilder<Part, State> withPartPosition( Part part, 
             Consumer<PartRenderContext<State>> positionFunction, 
-             State...states)  {
+            @SuppressWarnings("unchecked") State...states)  {
     	
         for(State state: states) {
             withPartPosition(part, state, positionFunction, DEFAULT_DURATION);
@@ -193,7 +191,7 @@ public class HierarchicalRendererBuilder<Part, State extends RenderState> {
             
             
 
-            ResourceLocation textureResource = new ResourceLocation(ID,
+            ResourceLocation textureResource = new ResourceLocation(ModReference.ID,
                     "textures/entity/" + partConfiguration.textureName + ( partConfiguration.textureName.endsWith(".png") ? "" : ".png"));
 
             Supplier<MultipartRenderStateManager<State, SinglePart, PartRenderContext<State>>> stateManagerSupplier = 

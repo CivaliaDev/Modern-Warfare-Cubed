@@ -1,11 +1,11 @@
 package com.paneedah.weaponlib.melee;
 
-import com.paneedah.mwc.network.NetworkPermitManager;
 import com.paneedah.weaponlib.*;
-import com.paneedah.mwc.network.TypeRegistry;
+import com.paneedah.weaponlib.network.TypeRegistry;
 import com.paneedah.weaponlib.state.Aspect;
 import com.paneedah.weaponlib.state.Permit;
 import com.paneedah.weaponlib.state.Permit.Status;
+import com.paneedah.weaponlib.state.PermitManager;
 import com.paneedah.weaponlib.state.StateManager;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,9 +26,9 @@ import static com.paneedah.mwc.utils.ModReference.LOG;
 public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMeleeInstance> {
 	
 	static {
-		TypeRegistry.getINSTANCE().register(EnterAttachmentModePermit.class);
-		TypeRegistry.getINSTANCE().register(ExitAttachmentModePermit.class);
-		TypeRegistry.getINSTANCE().register(ChangeAttachmentPermit.class);
+		TypeRegistry.getInstance().register(EnterAttachmentModePermit.class);
+		TypeRegistry.getInstance().register(ExitAttachmentModePermit.class);
+		TypeRegistry.getInstance().register(ChangeAttachmentPermit.class);
 	}
 	
 	private static class AttachmentLookupResult {
@@ -66,20 +66,20 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 		}
 		
 		@Override
-		public void read(ByteBuf byteBuf) {
-			super.read(byteBuf);
-			attachmentCategory = AttachmentCategory.values()[byteBuf.readInt()];
+		public void init(ByteBuf buf) {
+			super.init(buf);
+			attachmentCategory = AttachmentCategory.values()[buf.readInt()];
 		}
 		
 		@Override
-		public void write(ByteBuf byteBuf) {
-			super.write(byteBuf);
-			byteBuf.writeInt(attachmentCategory.ordinal());
+		public void serialize(ByteBuf buf) {
+			super.serialize(buf);
+			buf.writeInt(attachmentCategory.ordinal());
 		}
 	}
 	
 	private ModContext modContext;
-	private NetworkPermitManager permitManager;
+	private PermitManager permitManager;
 	private StateManager<MeleeState, ? super PlayerMeleeInstance> stateManager;
 	
 	private long clickSpammingTimeout = 100;
@@ -132,7 +132,7 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 	}
 	
 	@Override
-	public void setPermitManager(NetworkPermitManager permitManager) {
+	public void setPermitManager(PermitManager permitManager) {
 		this.permitManager = permitManager;
 		permitManager.registerEvaluator(EnterAttachmentModePermit.class, PlayerMeleeInstance.class, 
 				this::enterAttachmentSelectionMode);
@@ -220,7 +220,7 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 		}
 	}
 	
-	
+	@SuppressWarnings("unchecked")
 	private void changeAttachment(ChangeAttachmentPermit permit, PlayerMeleeInstance weaponInstance) {
         if(!(weaponInstance.getPlayer() instanceof EntityPlayer)) {
 	        return;
@@ -352,7 +352,7 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 			
 			ItemStack slotItemStack = ((EntityPlayer)weaponInstance.getPlayer()).inventory.getStackInSlot(currentIndex);
 			if(slotItemStack != null && slotItemStack.getItem() instanceof ItemAttachment) {
-				
+				@SuppressWarnings("unchecked")
 				ItemAttachment<ItemMelee> attachmentItemFromInventory = (ItemAttachment<ItemMelee>) slotItemStack.getItem();
 				CompatibleAttachment<ItemMelee> compatibleAttachment;
 				if(attachmentItemFromInventory.getCategory() == category 
@@ -372,7 +372,7 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 		return result;
 	}
 	
-	
+	@SuppressWarnings("unchecked")
 	/**
 	 * Adds the attachment to the weapon identified by the itemStack without removing the attachment from the inventory.
 	 * 
@@ -399,7 +399,7 @@ public final class MeleeAttachmentAspect implements Aspect<MeleeState, PlayerMel
 		}
 	}
 	
-	
+	@SuppressWarnings("unchecked")
 	/**
 	 * Removes the attachment from the weapon identified by the itemStack without adding the attachment to the inventory.
 	 * 

@@ -1,6 +1,6 @@
 package com.paneedah.weaponlib;
 
-import com.paneedah.mwc.network.TypeRegistry;
+import com.paneedah.weaponlib.network.TypeRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 public class PlayerMagazineInstance extends PlayerItemInstance<MagazineState> {
 	
 	static {
-		TypeRegistry.getINSTANCE().register(PlayerMagazineInstance.class);
+		TypeRegistry.getInstance().register(PlayerMagazineInstance.class);
 	}
 	
 //	private int ammo;
@@ -33,14 +33,14 @@ public class PlayerMagazineInstance extends PlayerItemInstance<MagazineState> {
 	}
 	
 	@Override
-	public void read(ByteBuf byteBuf) {
-		super.read(byteBuf);
+	public void init(ByteBuf buf) {
+		super.init(buf);
 //		ammo = buf.readInt();
 	}
 	
 	@Override
-	public void write(ByteBuf byteBuf) {
-		super.write(byteBuf);
+	public void serialize(ByteBuf buf) {
+		super.serialize(buf);
 //		buf.writeInt(ammo);
 	}
 	

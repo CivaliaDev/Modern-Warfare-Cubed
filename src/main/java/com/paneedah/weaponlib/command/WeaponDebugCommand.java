@@ -4,8 +4,7 @@ import com.paneedah.weaponlib.*;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
-
-import java.util.Arrays;
+import scala.actors.threadpool.Arrays;
 
 public class WeaponDebugCommand extends TidyCompatibleCommand {
 

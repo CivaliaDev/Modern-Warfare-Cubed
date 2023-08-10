@@ -39,7 +39,6 @@ public class AK47Factory {
         .withReloadSound("ak_reload")
         .withUnloadSound("ak_unload")
         .withInspectSound("inspection")
-        .withEndOfShootSound("gun_click")
         .withDrawSound("ak_draw")
         .withReloadingTime(45)
         .withCrosshair("gun")
@@ -49,7 +48,7 @@ public class AK47Factory {
         .withFlashScale(() -> 0.5f)
         .withFlashOffsetX(() -> 0.12f)
         .withFlashOffsetY(() -> 0.16f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .useNewSystem()
         .withRecoilParam(new RecoilParam(
 				// The weapon power

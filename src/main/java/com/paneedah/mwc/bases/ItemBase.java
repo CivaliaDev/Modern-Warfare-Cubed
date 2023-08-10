@@ -16,7 +16,7 @@ public class ItemBase extends Item {
 
         setMaxStackSize(stackSize);
         // Might want to change that?
-        setCreativeTab(MWC.BLOCKS_AND_INGOTS_TAB);
+        setCreativeTab(MWC.BLOCKS_TAB);
     }
 
     public void setStackSize(int stackSize) {
@@ -25,7 +25,7 @@ public class ItemBase extends Item {
 
     /*
     *  OreDictionary Keys (compatibility)
-    *  https://MCreator.net/wiki/ore-dictionary-names-list for commonly used OreDict names
+    *  https://mcreator.net/wiki/ore-dictionary-names-list for commonly used OreDict names
     *  Don't hesitate to use this :D
     */
     public void setOreDict(String[] oreDictKeys) {

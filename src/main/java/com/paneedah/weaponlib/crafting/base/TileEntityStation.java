@@ -91,6 +91,7 @@ public class TileEntityStation extends TileEntity implements ITickable, ISidedIn
 
 	@Override
 	public NBTTagCompound getUpdateTag() {
+		//System.out.println("GOT UPDATE TAG");
 		return this.writeToNBT(new NBTTagCompound());
 	}
 	

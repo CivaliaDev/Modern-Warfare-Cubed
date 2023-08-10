@@ -11,7 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class InventoryTabs {
 
@@ -53,8 +53,9 @@ public class InventoryTabs {
     }
 
     public void openInventoryGui() {
-        GuiInventory inventory = new GuiInventory(MC.player);
-        MC.displayGuiScreen(inventory);
+        mc.player.closeScreen();
+        GuiInventory inventory = new GuiInventory(mc.player);
+        mc.displayGuiScreen(inventory);
     }
 
     public void updateTabValues(int cornerX, int cornerY, Class<?> selectedButton) {
@@ -72,7 +73,7 @@ public class InventoryTabs {
         }
     }
 
-    
+    @SuppressWarnings("unchecked")
     public void addTabsToList(List<?> buttonList) {
         for (InventoryTab tab : tabList) {
             if (tab.shouldAddToList()) {

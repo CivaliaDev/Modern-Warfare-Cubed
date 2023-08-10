@@ -51,7 +51,7 @@ public class ScorpionEVO3A1Factory implements GunFactory {
 		.withShellCasingVerticalOffset(-0.03f)
 //		.withShellCasingEjectEnabled(false)
 		.withInaccuracy(2f)
-		.withCreativeTab(MWC.WEAPONS_TAB)
+		.withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
 		.useNewSystem()
         .withRecoilParam(new RecoilParam(
 				// The weapon power

@@ -47,7 +47,7 @@ public class ZbroyarZ10Factory implements GunFactory {
         .withFlashOffsetY(() -> 0.15f)
         .withShellCasingForwardOffset(0.05f)
         .withShellCasingVerticalOffset(-0.03f)
-        .withCreativeTab(MWC.WEAPONS_TAB)
+        .withCreativeTab(MWC.ASSAULT_RIFLES_TAB)
         .useNewSystem()
         .withRecoilParam(new RecoilParam(
         		// The weapon power

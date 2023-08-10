@@ -1,7 +1,6 @@
 package com.paneedah.mwc.utils;
 
 import com.paneedah.weaponlib.ItemMagazine;
-import com.paneedah.weaponlib.compatibility.CompatibleExtraEntityFlags;
 import com.paneedah.weaponlib.config.ModernConfigManager;
 import io.redstudioragnarok.redcore.vectors.Vector3D;
 import net.jafama.FastMath;
@@ -23,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.*;
 import java.util.function.BiPredicate;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 /**
  * This class provides random utility methods.
@@ -215,24 +214,20 @@ public class MWCUtil {
     }
 
     /**
-     * Gets interpolated player coordinates using the current partial renderer tick.
+     * Gets interpolated player coordinates using the current partial render tick.
      *
      * @return The interpolated player coordinates
      */
     @SideOnly(Side.CLIENT)
     public static Vec3d getInterpolatedPlayerPos() {
-        EntityPlayer player = MC.player;
+        EntityPlayer player = mc.player;
 
-        final float renderPartialTicks = MC.getRenderPartialTicks();
+        final float renderPartialTicks = mc.getRenderPartialTicks();
 
         final double interpolatedX = (player.posX - player.prevPosX) * renderPartialTicks + player.prevPosX;
         final double interpolatedY = (player.posY - player.prevPosY) * renderPartialTicks + player.prevPosY;
         final double interpolatedZ = (player.posZ - player.prevPosZ) * renderPartialTicks + player.prevPosZ;
 
         return new Vec3d(interpolatedX, interpolatedY, interpolatedZ);
-    }
-
-    public static boolean isProning(EntityPlayer player) {
-        return (CompatibleExtraEntityFlags.getFlags(player) & CompatibleExtraEntityFlags.PRONING) != 0;
     }
 }

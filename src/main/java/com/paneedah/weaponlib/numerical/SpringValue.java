@@ -2,7 +2,7 @@ package com.paneedah.weaponlib.numerical;
 
 import com.paneedah.weaponlib.animation.MatrixHelper;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 /**
  * Simulates a spring. Used for lots of effects that intend
@@ -135,12 +135,12 @@ public class SpringValue {
 	}
 
 	public double getLerpedPosition() {
-		return getLerpedPosition(MC.getRenderPartialTicks());
+		return getLerpedPosition(mc.getRenderPartialTicks());
 	}
 
 	public double getLerpedPosition(double mu) {
 		return MatrixHelper.solveLerp((float) this.prevPosition, (float) this.position,
-				MC.getRenderPartialTicks());
+				mc.getRenderPartialTicks());
 	}
 
 	public float getLerpedFloat() {

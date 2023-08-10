@@ -1,6 +1,5 @@
 package com.paneedah.weaponlib.electronics;
 
-import com.paneedah.mwc.MWC;
 import com.paneedah.weaponlib.ClientModContext;
 import com.paneedah.weaponlib.RenderContext;
 import com.paneedah.weaponlib.RenderableState;
@@ -15,7 +14,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiConsumer;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class ScopePerspective extends PerspectiveRenderer {
 	
@@ -34,10 +33,15 @@ public class ScopePerspective extends PerspectiveRenderer {
 			return;
 		}
 
-		ClientModContext clientModContext = (ClientModContext) MWC.modContext;
+		if(renderContext.getModContext() == null) {
+		    return;
+		}
 
-		
-        Perspective<RenderableState> perspective = (Perspective<RenderableState>) clientModContext.getViewManager().getPerspective(renderContext.getPlayerItemInstance(), false);
+		ClientModContext clientModContext = (ClientModContext) renderContext.getModContext();
+
+		@SuppressWarnings("unchecked")
+        Perspective<RenderableState> perspective = (Perspective<RenderableState>) clientModContext.getViewManager()
+            .getPerspective(renderContext.getPlayerItemInstance(), false);
 		if(perspective == null) {
 		    perspective = STATIC_TEXTURE_PERSPECTIVE;
 		}
@@ -50,7 +54,7 @@ public class ScopePerspective extends PerspectiveRenderer {
 		positioning.accept(renderContext.getPlayer(), renderContext.getWeapon());
 		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, framebuffer.framebufferTexture);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, perspective.getTexture(renderContext));
-		MC.entityRenderer.disableLightmap();
+		mc.entityRenderer.disableLightmap();
 		GlStateManager.enableDepth();
 		//GL11.glDepthMask(true);
 		//GL11.glDisable(GL11.GL_LIGHTING);
@@ -62,7 +66,7 @@ public class ScopePerspective extends PerspectiveRenderer {
 		GL11.glColor4f(brightness, brightness, brightness, 1f);
 		model.render(this.reticle, renderContext, renderContext.getPlayer(), renderContext.getScale());
 
-        MC.entityRenderer.enableLightmap();
+        mc.entityRenderer.enableLightmap();
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}

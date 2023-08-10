@@ -4,7 +4,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.util.vector.Quaternion;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class Arcball {
 	
@@ -30,7 +30,7 @@ public class Arcball {
 	}
 	
 	public static Vec3d project(int mouseX, int mouseY) {
-		ScaledResolution sr = new ScaledResolution(MC);
+		ScaledResolution sr = new ScaledResolution(mc);
 		double width = sr.getScaledWidth_double();
 		double height = sr.getScaledHeight_double();
 		

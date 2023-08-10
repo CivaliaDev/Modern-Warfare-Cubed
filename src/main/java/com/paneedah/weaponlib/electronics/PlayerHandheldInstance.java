@@ -1,7 +1,7 @@
 package com.paneedah.weaponlib.electronics;
 
 import com.paneedah.weaponlib.PlayerItemInstance;
-import com.paneedah.mwc.network.TypeRegistry;
+import com.paneedah.weaponlib.network.TypeRegistry;
 import com.paneedah.weaponlib.perspective.Perspective;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,7 +12,7 @@ public class PlayerHandheldInstance extends PlayerItemInstance<HandheldState> {
 	private static final int SERIAL_VERSION = 1;
 
 	static {
-		TypeRegistry.getINSTANCE().register(PlayerHandheldInstance.class);
+		TypeRegistry.getInstance().register(PlayerHandheldInstance.class);
 	}
 
 	public PlayerHandheldInstance() {
@@ -34,13 +34,13 @@ public class PlayerHandheldInstance extends PlayerItemInstance<HandheldState> {
 	}
 	
 	@Override
-	public void write(ByteBuf byteBuf) {
-	    super.write(byteBuf);
+	public void serialize(ByteBuf buf) {
+	    super.serialize(buf);
 	}
 	
 	@Override
-	public void read(ByteBuf byteBuf) {
-	    super.read(byteBuf);
+	public void init(ByteBuf buf) {
+	    super.init(buf);
 	}
 	
 	@Override

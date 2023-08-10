@@ -8,12 +8,12 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class SpawnEntityRenderer extends Render<Entity> {
 
 	protected SpawnEntityRenderer() {
-		super(MC.getRenderManager());
+		super(mc.getRenderManager());
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class SpawnEntityRenderer extends Render<Entity> {
 				GL11.glRotatef(entity.rotationYaw - 90 + (float)(angle * 180 / Math.PI), 0f, 1f, 0f);
 				GL11.glRotatef(90f + entity.rotationPitch, 0f, 0f, 1f);
 				GL11.glScalef(2f, 2f, 2f);
-				model.renderer(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
+				model.render(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 				GL11.glPopMatrix();
 				*/
 
@@ -80,7 +80,7 @@ public class SpawnEntityRenderer extends Render<Entity> {
 						  (float)0,
 						  (int)0);
 
-					MC.effectRenderer.addEffect(smokeParticle);
+					mc.effectRenderer.addEffect(smokeParticle);
 				}
 
 

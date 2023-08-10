@@ -1,8 +1,6 @@
 package com.paneedah.weaponlib.electronics;
 
-import com.paneedah.mwc.renderer.ModelSourceTransforms;
 import com.paneedah.weaponlib.*;
-import com.paneedah.weaponlib.animation.Transform;
 import com.paneedah.weaponlib.perspective.PerspectiveRenderer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,24 +9,12 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.function.BiConsumer;
 
-public class ItemTablet<T> extends ItemAttachment<T> implements PlayerItemInstanceFactory<PlayerTabletInstance, TabletState>, Updatable {
+public class ItemTablet<T> extends ItemAttachment<T> 
+implements PlayerItemInstanceFactory<PlayerTabletInstance, TabletState>, Updatable {
     
     private final int DEFAULT_MAX_STACK_SIZE = 1;
         
     public static final class Builder<T> extends AttachmentBuilder<T> {
-
-        {
-            transforms = ModelSourceTransforms.builder()
-                    .entityPositioning(itemStack -> new Transform()
-                            .withScale(0.3, 0.3, 0.3)
-                            .withPosition(-0.5, -0.5, 0.5)
-                            .doGLDirect())
-                    .inventoryPositioning(itemStack -> new Transform()
-                            .withScale(1, 1, 1)
-                            .withPosition(-0.24, 0.24, 0)
-                            .doGLDirect())
-                    .build();
-        }
         
         private BiConsumer<EntityLivingBase, ItemStack> viewfinderPositioning;
         
@@ -58,13 +44,14 @@ public class ItemTablet<T> extends ItemAttachment<T> implements PlayerItemInstan
             return super.build(modContext);
         }
     }
-
     
+    @SuppressWarnings("unused")
     private ModContext modContext;
     private Builder<T> builder;
     
     private ItemTablet(Builder<T> builder) {
-        super(AttachmentCategory.SCOPE, builder.getModel(), builder.getTextureName(), null, null, null);
+        super(AttachmentCategory.SCOPE, builder.getModel(), builder.getTextureName(), null,
+                null, null);
         this.builder = builder;
         
         setMaxStackSize(DEFAULT_MAX_STACK_SIZE);

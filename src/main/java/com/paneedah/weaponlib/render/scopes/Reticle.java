@@ -6,8 +6,6 @@ import net.minecraft.util.math.Vec3d;
 
 import java.awt.Color;
 
-import static com.paneedah.mwc.utils.ModReference.ID;
-
 public class Reticle {
 	
 	private static final int DEFAULT_TINT = 0x576574;
@@ -31,7 +29,7 @@ public class Reticle {
 	
 	public Reticle(String textureName, float textureScale, int background) {
 		this.reticleType = Type.HOLOGRAPHIC;
-		this.reticleTexture = new ResourceLocation(ID + ":textures/crosshairs/" + textureName + ".png");
+		this.reticleTexture = new ResourceLocation(ModReference.ID + ":textures/crosshairs/" + textureName + ".png");
 		this.textureScale = textureScale;
 		this.backgroundColor = extractColorFromHex(background);
 	}

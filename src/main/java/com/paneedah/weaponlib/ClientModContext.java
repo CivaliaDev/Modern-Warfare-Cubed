@@ -1,6 +1,5 @@
 package com.paneedah.weaponlib;
 
-import com.paneedah.mwc.ClientTicker;
 import com.paneedah.weaponlib.animation.ScreenShakingAnimationManager;
 import com.paneedah.weaponlib.command.DebugCommand;
 import com.paneedah.weaponlib.command.MainCommand;
@@ -37,7 +36,7 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.paneedah.mwc.proxies.ClientProxy.MC;
+import static com.paneedah.mwc.proxies.ClientProxy.mc;
 
 public class ClientModContext extends CommonModContext {
 
@@ -46,7 +45,7 @@ public class ClientModContext extends CommonModContext {
     private Lock mainLoopLock = new ReentrantLock();
     private CompatibleRenderingRegistry rendererRegistry;
 
-    private final SafeGlobals safeGlobals = new SafeGlobals();
+    private SafeGlobals safeGlobals = new SafeGlobals();
 
     private StatusMessageCenter statusMessageCenter;
 
@@ -72,7 +71,7 @@ public class ClientModContext extends CommonModContext {
 
         currentContext = new ClientModContext();
 
-        aspectRatio = (float) MC.displayWidth / MC.displayHeight;
+        aspectRatio = (float) mc.displayWidth / mc.displayHeight;
 
         ClientCommandHandler.instance.registerCommand(new DebugCommand());
 
@@ -86,23 +85,26 @@ public class ClientModContext extends CommonModContext {
         rendererRegistry.preInit();
 
         List<IResourcePack> defaultResourcePacks = ObfuscationReflectionHelper.getPrivateValue(
-                Minecraft.class, MC, "defaultResourcePacks", "field_110449_ao");
+                Minecraft.class, mc, "defaultResourcePacks", "field_110449_ao");
         WeaponResourcePack weaponResourcePack = new WeaponResourcePack();
         defaultResourcePacks.add(weaponResourcePack);
-        IResourceManager resourceManager = MC.getResourceManager();
+        IResourceManager resourceManager = mc.getResourceManager();
         if (resourceManager instanceof IReloadableResourceManager) {
             ((SimpleReloadableResourceManager) resourceManager).reloadResourcePack(weaponResourcePack);
         }
 
-        MinecraftForge.EVENT_BUS.register(new CustomGui(MC, this, weaponAttachmentAspect));
+        MinecraftForge.EVENT_BUS.register(new CustomGui(mc, this, weaponAttachmentAspect));
         MinecraftForge.EVENT_BUS.register(new WeaponEventHandler(this, safeGlobals));
 
         KeyBindings.init();
 
-        ClientTicker clientTicker = new ClientTicker(this);
-        Runtime.getRuntime().addShutdownHook(new Thread(clientTicker::stop));
-        clientTicker.start();
+        ClientWeaponTicker clientWeaponTicker = new ClientWeaponTicker(this);
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            clientWeaponTicker.shutdown();
+        }));
+
+        clientWeaponTicker.start();
         clientEventHandler = new ClientEventHandler(this, mainLoopLock, safeGlobals);
         MinecraftForge.EVENT_BUS.register(clientEventHandler);
 
@@ -176,7 +178,7 @@ public class ClientModContext extends CommonModContext {
 
     @Override
     protected EntityPlayer getPlayer(MessageContext ctx) {
-        return MC.player;
+        return mc.player;
     }
 
     @Override
@@ -200,7 +202,7 @@ public class ClientModContext extends CommonModContext {
 
     @Override
     public PlayerWeaponInstance getMainHeldWeapon() {
-        return getPlayerItemInstanceRegistry().getMainHandItemInstance(MC.player,
+        return getPlayerItemInstanceRegistry().getMainHandItemInstance(mc.player,
                 PlayerWeaponInstance.class);
     }
 
@@ -210,7 +212,7 @@ public class ClientModContext extends CommonModContext {
     }
 
     public PlayerMeleeInstance getMainHeldMeleeWeapon() {
-        return getPlayerItemInstanceRegistry().getMainHandItemInstance(MC.player,
+        return getPlayerItemInstanceRegistry().getMainHandItemInstance(mc.player,
                 PlayerMeleeInstance.class);
     }
 
