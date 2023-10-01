@@ -166,8 +166,6 @@ public class MagazineReloadAspect implements Aspect<MagazineState, PlayerMagazin
                 originalFlag = false;
             }
             
-            
-            
             ItemMagazine magazine = (ItemMagazine) magazineItemStack.getItem();
             List<ItemBullet> compatibleBullets = magazine.getCompatibleBullets();
             int currentAmmo = originalFlag ? Tags.getAmmo(magazineStack) : Tags.getAmmo(magazineItemStack);

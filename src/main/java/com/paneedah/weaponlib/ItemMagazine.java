@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemInstanceFactory<PlayerMagazineInstance, MagazineState>, Reloadable, Updatable, Part {
-	
 	public static final class Builder extends AttachmentBuilder<Weapon> {
-		private int capacity;
 		private final List<ItemBullet> compatibleBullets = new ArrayList<>();
 		private String reloadSound;
+		private int capacity;
 		private String unloadSound;
-		
+
 		public Builder withCapacity(int capacity) {
 			this.capacity = capacity;
 			return this;
@@ -34,35 +33,34 @@ public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemIn
 			this.unloadSound = unloadSound;
 			return this;
 		}
-		
+
 		public Builder withReloadSound(String reloadSound) {
 			this.reloadSound = reloadSound;
 			return this;
 		}
-		
+
 		@Override
 		protected ItemAttachment<Weapon> createAttachment(ModContext modContext) {
-			final ItemMagazine magazine = new ItemMagazine(getModel(), getTextureName(), capacity);
+			final ItemMagazine magazine = new ItemMagazine(getModel(), getTextureName(), this.capacity);
 
 			magazine.compatibleBullets = compatibleBullets;
 
-			if(reloadSound != null)
+			if (reloadSound != null)
 				magazine.reloadSound = modContext.registerSound(reloadSound);
 
-			if (unloadSound!= null)
+			if (unloadSound != null)
 				magazine.unloadSound = modContext.registerSound(unloadSound);
 
 			magazine.modContext = modContext;
 
-			withInformationProvider((stack) -> TextFormatting.RED + "Ammo: " + TextFormatting.GRAY + Tags.getAmmo(stack) + "/" + capacity);
+			withInformationProvider((stack) -> TextFormatting.RED + "Ammo: " + TextFormatting.GRAY + Tags.getAmmo(stack) + "/" + this.capacity);
 
 			return magazine;
 		}
 	}
 
+	private int capacity;
 	private ModContext modContext;
-
-	private final int capacity;
 	private List<ItemBullet> compatibleBullets;
 	private SoundEvent reloadSound;
 	private SoundEvent unloadSound;
@@ -86,7 +84,7 @@ public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemIn
 	}
 
 	public ItemStack create() {
-		return this.create(capacity);
+		return this.create(this.capacity);
 	}
 
 	private void initializeTag(ItemStack itemStack, int initialAmmo) {
@@ -95,10 +93,11 @@ public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemIn
 			Tags.setAmmo(itemStack, initialAmmo);
 		}
 	}
-	
+
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player) {
-		initializeTag(stack, 0);
+		initializeTag(stack, this.capacity);
+		Tags.setAmmo(stack, this.capacity);
 	}
 
 	List<ItemBullet> getCompatibleBullets() {
@@ -106,7 +105,7 @@ public class ItemMagazine extends ItemAttachment<Weapon> implements PlayerItemIn
 	}
 
 	public int getCapacity() {
-		return capacity;
+		return this.capacity;
 	}
 
 	public SoundEvent getReloadSound() {
